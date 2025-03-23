@@ -1206,7 +1206,9 @@ export default function HealthcareLanding() {
           <div className="flex flex-col gap-2 max-w-xs">
             <div className="flex items-center gap-2">
               <HeartPulse className="h-6 w-6 text-[#0284c7]" />
-              <span className="text-xl font-bold text-[#0f172a]">MediCare</span>
+              <span className="text-xl font-bold text-[#0f172a]">
+                Health Track
+              </span>
             </div>
             <p className="text-sm text-[#64748b]">
               Providing quality healthcare services since 1998. Our mission is
