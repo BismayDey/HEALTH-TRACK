@@ -495,13 +495,15 @@ export default function HealthcareLanding() {
                       </span>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="w-full group border-[#0284c7] text-[#0284c7]"
-                  >
-                    Try AI Diagnostics
-                    <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
+                  <a href="../diagnostics">
+                    <Button
+                      variant="outline"
+                      className="w-full group border-[#0284c7] text-[#0284c7]"
+                    >
+                      Try AI Diagnostics
+                      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </a>
                 </div>
               </Card>
 
