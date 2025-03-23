@@ -373,7 +373,7 @@ export default function Home() {
 
           <Card
             className={`p-6 ${
-              isSirenOn ? "bg-red-500" : "bg-secondary"
+              isSirenOn ? "bg-red-500" : "bg-green-500"
             } text-white hover:opacity-90 cursor-pointer transition-all transform hover:scale-105`}
             onClick={() => (isSirenOn ? stopSiren() : startSiren())}
           >
