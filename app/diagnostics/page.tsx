@@ -483,7 +483,7 @@ function SkinAnalysis() {
   const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [result, setResult] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -548,11 +548,11 @@ function SkinAnalysis() {
 
       // Create form data
       const formData = new FormData();
-      formData.append("image", blob, "image.jpg");
+      formData.append("file", blob, "image.jpg");
 
       // Send to API
       const apiResponse = await fetch(
-        "https://health-api-12zd.onrender.com/predict/skin_disease",
+        "https://health-api-12zd.onrender.com/image/predict/skin_disease",
         {
           method: "POST",
           body: formData,
@@ -564,35 +564,10 @@ function SkinAnalysis() {
       }
 
       const data = await apiResponse.json();
-
-      // Set progress to 100% when done
-      setProgress(100);
-
-      // Use API response or fallback to mock data if API format is different
-      setResult({
-        condition: data.prediction || "Benign Nevus",
-        confidence: data.confidence || 98.2,
-        risk: data.risk || "low",
-        recommendations: data.recommendations || [
-          "No immediate action required",
-          "Continue regular skin checks",
-          "Use sunscreen when outdoors",
-        ],
-      });
+      setResult(data.result || data.error);
     } catch (error) {
       console.error("Error analyzing image:", error);
-
-      // Fallback to mock result
-      setResult({
-        condition: "Benign Nevus",
-        confidence: 98.2,
-        risk: "low",
-        recommendations: [
-          "No immediate action required",
-          "Continue regular skin checks",
-          "Use sunscreen when outdoors",
-        ],
-      });
+      setResult("Error fetching data. Please try again.");
     } finally {
       clearInterval(interval);
       setProgress(100);
@@ -696,50 +671,12 @@ function SkinAnalysis() {
               <Card className="p-4 border-0 shadow-md overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl opacity-70 -z-10"></div>
                 <div className="flex items-start gap-4">
-                  <div
-                    className={cn(
-                      "p-2 rounded-full transition-all duration-500",
-                      result.risk === "low" ? "bg-emerald-100" : "bg-amber-100"
-                    )}
-                  >
-                    {result.risk === "low" ? (
-                      <CheckCircle2 className="h-6 w-6 text-emerald-600" />
-                    ) : (
-                      <AlertCircle className="h-6 w-6 text-amber-600" />
-                    )}
+                  <div className="p-2 rounded-full bg-emerald-100">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-600" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-lg">
-                      {result.condition}
-                    </h3>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="text-sm font-medium">
-                        Confidence: {result.confidence.toFixed(1)}%
-                      </div>
-                      <div
-                        className={cn(
-                          "text-xs px-2 py-0.5 rounded-full",
-                          result.risk === "low"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-amber-100 text-amber-800"
-                        )}
-                      >
-                        {result.risk.toUpperCase()} RISK
-                      </div>
-                    </div>
-                    <div className="space-y-1 mt-3">
-                      <h4 className="text-sm font-medium">Recommendations:</h4>
-                      <ul className="text-sm text-slate-600 space-y-1">
-                        {result.recommendations.map((rec, i) => (
-                          <li key={i} className="flex items-start gap-2">
-                            <div className="rounded-full bg-slate-100 p-0.5 mt-0.5">
-                              <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                            </div>
-                            {rec}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <h3 className="font-semibold text-lg">Analysis Result</h3>
+                    <p className="text-slate-600">{result}</p>
                   </div>
                 </div>
               </Card>
@@ -756,26 +693,23 @@ function HeartRiskAnalysis() {
   const [formData, setFormData] = useState({
     age: "",
     gender: "",
-    systolic: "",
-    diastolic: "",
-    cholesterol: "",
-    hdl: "",
-    ldl: "",
-    smoker: "",
-    diabetes: "",
-    familyHistory: "",
+    cp: "",
+    trestbps: "",
+    chol: "",
+    restecg: "",
+    thalach: "",
+    exang: "",
+    oldpeak: "",
+    slope: "",
+    ca: "",
   });
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [result, setResult] = useState<HeartRiskResult | null>(null);
+  const [result, setResult] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -800,20 +734,21 @@ function HeartRiskAnalysis() {
       // Prepare data for API
       const apiData = {
         age: Number.parseInt(formData.age),
-        gender: formData.gender,
-        systolic: Number.parseInt(formData.systolic),
-        diastolic: Number.parseInt(formData.diastolic),
-        cholesterol: Number.parseInt(formData.cholesterol),
-        hdl: Number.parseInt(formData.hdl),
-        ldl: formData.ldl ? Number.parseInt(formData.ldl) : 0,
-        smoker: formData.smoker === "yes",
-        diabetes: formData.diabetes === "yes",
-        familyHistory: formData.familyHistory === "yes",
+        gender: Number.parseInt(formData.gender),
+        cp: Number.parseInt(formData.cp),
+        trestbps: Number.parseInt(formData.trestbps),
+        chol: Number.parseInt(formData.chol),
+        restecg: Number.parseInt(formData.restecg),
+        thalach: Number.parseInt(formData.thalach),
+        exang: Number.parseInt(formData.exang),
+        oldpeak: Number.parseFloat(formData.oldpeak),
+        slope: Number.parseInt(formData.slope),
+        ca: Number.parseInt(formData.ca),
       };
 
       // Send to API
       const response = await fetch(
-        "https://health-api-12zd.onrender.com/predict/heart_disease",
+        "https://health-api-12zd.onrender.com/disease/predict/heart_disease",
         {
           method: "POST",
           headers: {
@@ -828,65 +763,10 @@ function HeartRiskAnalysis() {
       }
 
       const data = await response.json();
-
-      // Set progress to 100% when done
-      setProgress(100);
-
-      // Use API response or fallback to mock data if API format is different
-      const riskScore = data.risk_score || Math.floor(Math.random() * 30) + 5;
-
-      setResult({
-        riskScore: riskScore,
-        riskLevel:
-          riskScore < 10 ? "low" : riskScore < 20 ? "moderate" : "high",
-        confidence: data.confidence || 95.3,
-        keyFactors: data.key_factors || [
-          formData.cholesterol
-            ? "Elevated cholesterol levels"
-            : "Normal cholesterol levels",
-          formData.smoker === "yes" ? "Current smoker" : "Non-smoker",
-          formData.familyHistory === "yes"
-            ? "Family history of heart disease"
-            : "No family history of heart disease",
-        ],
-        recommendations: data.recommendations || [
-          "Maintain a heart-healthy diet",
-          "Regular cardiovascular exercise",
-          "Monitor blood pressure regularly",
-          formData.smoker === "yes"
-            ? "Consider smoking cessation program"
-            : "Continue avoiding tobacco products",
-        ],
-      });
+      setResult(data.result || data.error);
     } catch (error) {
       console.error("Error analyzing heart risk:", error);
-
-      // Fallback to mock result
-      const riskScore = Math.floor(Math.random() * 30) + 5;
-
-      setResult({
-        riskScore: riskScore,
-        riskLevel:
-          riskScore < 10 ? "low" : riskScore < 20 ? "moderate" : "high",
-        confidence: 95.3,
-        keyFactors: [
-          formData.cholesterol
-            ? "Elevated cholesterol levels"
-            : "Normal cholesterol levels",
-          formData.smoker === "yes" ? "Current smoker" : "Non-smoker",
-          formData.familyHistory === "yes"
-            ? "Family history of heart disease"
-            : "No family history of heart disease",
-        ],
-        recommendations: [
-          "Maintain a heart-healthy diet",
-          "Regular cardiovascular exercise",
-          "Monitor blood pressure regularly",
-          formData.smoker === "yes"
-            ? "Consider smoking cessation program"
-            : "Continue avoiding tobacco products",
-        ],
-      });
+      setResult("Error fetching data. Please try again.");
     } finally {
       clearInterval(interval);
       setProgress(100);
@@ -926,34 +806,41 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
-                <Select
+                <Label htmlFor="gender">Gender (0 = Female, 1 = Male)</Label>
+                <Input
+                  id="gender"
+                  name="gender"
+                  type="number"
+                  placeholder="0 or 1"
                   value={formData.gender}
-                  onValueChange={(value) => handleSelectChange("gender", value)}
+                  onChange={handleInputChange}
                   required
-                >
-                  <SelectTrigger
-                    id="gender"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
-                  >
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+                  className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="systolic">Systolic BP (mmHg)</Label>
+                <Label htmlFor="cp">Chest Pain Type (0-3)</Label>
                 <Input
-                  id="systolic"
-                  name="systolic"
+                  id="cp"
+                  name="cp"
+                  type="number"
+                  placeholder="0-3"
+                  value={formData.cp}
+                  onChange={handleInputChange}
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="trestbps">Resting BP (mmHg)</Label>
+                <Input
+                  id="trestbps"
+                  name="trestbps"
                   type="number"
                   placeholder="e.g., 120"
-                  value={formData.systolic}
+                  value={formData.trestbps}
                   onChange={handleInputChange}
                   required
                   className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
@@ -961,27 +848,13 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="diastolic">Diastolic BP (mmHg)</Label>
+                <Label htmlFor="chol">Cholesterol (mg/dL)</Label>
                 <Input
-                  id="diastolic"
-                  name="diastolic"
-                  type="number"
-                  placeholder="e.g., 80"
-                  value={formData.diastolic}
-                  onChange={handleInputChange}
-                  required
-                  className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="cholesterol">Total Cholesterol (mg/dL)</Label>
-                <Input
-                  id="cholesterol"
-                  name="cholesterol"
+                  id="chol"
+                  name="chol"
                   type="number"
                   placeholder="e.g., 200"
-                  value={formData.cholesterol}
+                  value={formData.chol}
                   onChange={handleInputChange}
                   required
                   className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
@@ -989,13 +862,13 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="hdl">HDL Cholesterol (mg/dL)</Label>
+                <Label htmlFor="restecg">Rest ECG (0-2)</Label>
                 <Input
-                  id="hdl"
-                  name="hdl"
+                  id="restecg"
+                  name="restecg"
                   type="number"
-                  placeholder="e.g., 50"
-                  value={formData.hdl}
+                  placeholder="0-2"
+                  value={formData.restecg}
                   onChange={handleInputChange}
                   required
                   className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
@@ -1003,72 +876,74 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="smoker">Do you smoke?</Label>
-                <Select
-                  value={formData.smoker}
-                  onValueChange={(value) => handleSelectChange("smoker", value)}
+                <Label htmlFor="thalach">Max Heart Rate</Label>
+                <Input
+                  id="thalach"
+                  name="thalach"
+                  type="number"
+                  placeholder="e.g., 150"
+                  value={formData.thalach}
+                  onChange={handleInputChange}
                   required
-                >
-                  <SelectTrigger
-                    id="smoker"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
-                  >
-                    <SelectValue placeholder="Select option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="yes">Yes</SelectItem>
-                    <SelectItem value="no">No</SelectItem>
-                    <SelectItem value="former">Former smoker</SelectItem>
-                  </SelectContent>
-                </Select>
+                  className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="diabetes">Do you have diabetes?</Label>
-                <Select
-                  value={formData.diabetes}
-                  onValueChange={(value) =>
-                    handleSelectChange("diabetes", value)
-                  }
+                <Label htmlFor="exang">Exercise Angina (0 = No, 1 = Yes)</Label>
+                <Input
+                  id="exang"
+                  name="exang"
+                  type="number"
+                  placeholder="0 or 1"
+                  value={formData.exang}
+                  onChange={handleInputChange}
                   required
-                >
-                  <SelectTrigger
-                    id="diabetes"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
-                  >
-                    <SelectValue placeholder="Select option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="yes">Yes</SelectItem>
-                    <SelectItem value="no">No</SelectItem>
-                    <SelectItem value="prediabetes">Prediabetes</SelectItem>
-                  </SelectContent>
-                </Select>
+                  className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="familyHistory">
-                  Family history of heart disease?
-                </Label>
-                <Select
-                  value={formData.familyHistory}
-                  onValueChange={(value) =>
-                    handleSelectChange("familyHistory", value)
-                  }
+                <Label htmlFor="oldpeak">Oldpeak</Label>
+                <Input
+                  id="oldpeak"
+                  name="oldpeak"
+                  type="number"
+                  step="0.1"
+                  placeholder="e.g., 1.5"
+                  value={formData.oldpeak}
+                  onChange={handleInputChange}
                   required
-                >
-                  <SelectTrigger
-                    id="familyHistory"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
-                  >
-                    <SelectValue placeholder="Select option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="yes">Yes</SelectItem>
-                    <SelectItem value="no">No</SelectItem>
-                    <SelectItem value="unknown">Unknown</SelectItem>
-                  </SelectContent>
-                </Select>
+                  className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="slope">Slope (0-2)</Label>
+                <Input
+                  id="slope"
+                  name="slope"
+                  type="number"
+                  placeholder="0-2"
+                  value={formData.slope}
+                  onChange={handleInputChange}
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="ca">CA (0-3)</Label>
+                <Input
+                  id="ca"
+                  name="ca"
+                  type="number"
+                  placeholder="0-3"
+                  value={formData.ca}
+                  onChange={handleInputChange}
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-rose-500"
+                />
               </div>
             </div>
 
@@ -1129,91 +1004,15 @@ function HeartRiskAnalysis() {
               <Card className="p-6 border-0 shadow-md overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-rose-100 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl opacity-70 -z-10"></div>
                 <div className="flex flex-col md:flex-row md:items-center gap-6">
-                  <div
-                    className={cn(
-                      "p-4 rounded-full self-center transition-all duration-500",
-                      result.riskLevel === "low"
-                        ? "bg-emerald-100"
-                        : result.riskLevel === "moderate"
-                        ? "bg-amber-100"
-                        : "bg-rose-100"
-                    )}
-                  >
-                    <Heart
-                      className={cn(
-                        "h-12 w-12",
-                        result.riskLevel === "low"
-                          ? "text-emerald-600"
-                          : result.riskLevel === "moderate"
-                          ? "text-amber-600"
-                          : "text-rose-600"
-                      )}
-                    />
+                  <div className="p-4 rounded-full bg-rose-100">
+                    <Heart className="h-12 w-12 text-rose-600" />
                   </div>
-
                   <div className="flex-1 text-center md:text-left">
-                    <h3 className="text-2xl font-bold mb-1">
-                      {result.riskLevel === "low"
-                        ? "Low"
-                        : result.riskLevel === "moderate"
-                        ? "Moderate"
-                        : "High"}{" "}
-                      Risk
-                    </h3>
-                    <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
-                      <div className="text-3xl font-bold">
-                        {result.riskScore}%
-                      </div>
-                      <div className="text-sm text-slate-500">
-                        10-year risk of cardiovascular event
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1 text-sm justify-center md:justify-start">
-                      <Activity className="h-4 w-4 text-slate-400" />
-                      <span className="text-slate-600">
-                        Analysis confidence: {result.confidence.toFixed(1)}%
-                      </span>
-                    </div>
+                    <h3 className="text-2xl font-bold mb-1">Analysis Result</h3>
+                    <p className="text-slate-600">{result}</p>
                   </div>
                 </div>
               </Card>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="p-6 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    Key Risk Factors
-                  </h3>
-                  <ul className="space-y-3">
-                    {result.keyFactors.map((factor, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <div className="rounded-full bg-slate-100 p-1 mt-0.5">
-                          <ArrowRight className="h-3 w-3 text-slate-600" />
-                        </div>
-                        <span className="text-sm">{factor}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-
-                <Card className="p-6 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-rose-500" />
-                    Recommendations
-                  </h3>
-                  <ul className="space-y-3">
-                    {result.recommendations.map((rec, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <div className="rounded-full bg-emerald-100 p-1 mt-0.5">
-                          <ArrowRight className="h-3 w-3 text-emerald-600" />
-                        </div>
-                        <span className="text-sm">{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-              </div>
 
               <Button
                 onClick={resetAnalysis}
@@ -1233,27 +1032,19 @@ function HeartRiskAnalysis() {
 // Diabetes Analysis Component
 function DiabetesAnalysis() {
   const [formData, setFormData] = useState({
+    glucose: "",
+    BP: "",
+    insulin: "",
+    BMI: "",
     age: "",
-    gender: "",
-    bmi: "",
-    bloodGlucose: "",
-    familyHistory: "",
-    physicalActivity: "",
-    diet: "",
-    bloodPressure: "",
-    waistCircumference: "",
   });
 
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [result, setResult] = useState<DiabetesRiskResult | null>(null);
+  const [result, setResult] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -1277,20 +1068,16 @@ function DiabetesAnalysis() {
     try {
       // Prepare data for API
       const apiData = {
+        glucose: Number.parseInt(formData.glucose),
+        BP: Number.parseInt(formData.BP),
+        insulin: Number.parseInt(formData.insulin),
+        BMI: Number.parseFloat(formData.BMI),
         age: Number.parseInt(formData.age),
-        gender: formData.gender,
-        bmi: Number.parseFloat(formData.bmi),
-        bloodGlucose: Number.parseInt(formData.bloodGlucose),
-        familyHistory: formData.familyHistory === "yes",
-        physicalActivity: formData.physicalActivity,
-        diet: formData.diet,
-        bloodPressure: formData.bloodPressure || "normal",
-        waistCircumference: Number.parseInt(formData.waistCircumference),
       };
 
       // Send to API
       const response = await fetch(
-        "https://health-api-12zd.onrender.com/predict/diabetes",
+        "https://health-api-12zd.onrender.com/disease/predict/diabetes",
         {
           method: "POST",
           headers: {
@@ -1305,65 +1092,10 @@ function DiabetesAnalysis() {
       }
 
       const data = await response.json();
-
-      // Set progress to 100% when done
-      setProgress(100);
-
-      // Use API response or fallback to mock data if API format is different
-      const riskScore = data.risk_score || Math.floor(Math.random() * 30) + 5;
-
-      setResult({
-        riskScore: riskScore,
-        riskLevel:
-          riskScore < 10 ? "low" : riskScore < 20 ? "moderate" : "high",
-        confidence: data.confidence || 93.7,
-        keyFactors: data.key_factors || [
-          formData.bloodGlucose
-            ? `Blood glucose level: ${formData.bloodGlucose} mg/dL`
-            : "Blood glucose not provided",
-          formData.bmi ? `BMI: ${formData.bmi}` : "BMI not provided",
-          formData.familyHistory === "yes"
-            ? "Family history of diabetes"
-            : "No family history of diabetes",
-        ],
-        recommendations: data.recommendations || [
-          "Maintain a balanced diet low in refined sugars",
-          "Regular physical activity (150+ minutes per week)",
-          "Monitor blood glucose levels periodically",
-          Number.parseFloat(formData.bmi) > 25
-            ? "Consider weight management program"
-            : "Maintain healthy weight",
-        ],
-      });
+      setResult(data.result || data.error);
     } catch (error) {
       console.error("Error analyzing diabetes risk:", error);
-
-      // Fallback to mock result
-      const riskScore = Math.floor(Math.random() * 30) + 5;
-
-      setResult({
-        riskScore: riskScore,
-        riskLevel:
-          riskScore < 10 ? "low" : riskScore < 20 ? "moderate" : "high",
-        confidence: 93.7,
-        keyFactors: [
-          formData.bloodGlucose
-            ? `Blood glucose level: ${formData.bloodGlucose} mg/dL`
-            : "Blood glucose not provided",
-          formData.bmi ? `BMI: ${formData.bmi}` : "BMI not provided",
-          formData.familyHistory === "yes"
-            ? "Family history of diabetes"
-            : "No family history of diabetes",
-        ],
-        recommendations: [
-          "Maintain a balanced diet low in refined sugars",
-          "Regular physical activity (150+ minutes per week)",
-          "Monitor blood glucose levels periodically",
-          Number.parseFloat(formData.bmi) > 25
-            ? "Consider weight management program"
-            : "Maintain healthy weight",
-        ],
-      });
+      setResult("Error fetching data. Please try again.");
     } finally {
       clearInterval(interval);
       setProgress(100);
@@ -1389,166 +1121,70 @@ function DiabetesAnalysis() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
+                <Label htmlFor="glucose">Glucose (mg/dL)</Label>
+                <Input
+                  id="glucose"
+                  name="glucose"
+                  type="number"
+                  placeholder="e.g., 95"
+                  value={formData.glucose}
+                  onChange={handleInputChange}
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="BP">Blood Pressure (mmHg)</Label>
+                <Input
+                  id="BP"
+                  name="BP"
+                  type="number"
+                  placeholder="e.g., 120"
+                  value={formData.BP}
+                  onChange={handleInputChange}
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="insulin">Insulin (μU/mL)</Label>
+                <Input
+                  id="insulin"
+                  name="insulin"
+                  type="number"
+                  placeholder="e.g., 50"
+                  value={formData.insulin}
+                  onChange={handleInputChange}
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="BMI">BMI</Label>
+                <Input
+                  id="BMI"
+                  name="BMI"
+                  type="number"
+                  step="0.1"
+                  placeholder="e.g., 24.5"
+                  value={formData.BMI}
+                  onChange={handleInputChange}
+                  required
+                  className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="age">Age</Label>
                 <Input
                   id="age"
                   name="age"
                   type="number"
-                  placeholder="Enter your age"
+                  placeholder="e.g., 35"
                   value={formData.age}
-                  onChange={handleInputChange}
-                  required
-                  className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
-                <Select
-                  value={formData.gender}
-                  onValueChange={(value) => handleSelectChange("gender", value)}
-                  required
-                >
-                  <SelectTrigger
-                    id="gender"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
-                  >
-                    <SelectValue placeholder="Select gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bmi">BMI</Label>
-                <Input
-                  id="bmi"
-                  name="bmi"
-                  type="number"
-                  step="0.1"
-                  placeholder="e.g., 24.5"
-                  value={formData.bmi}
-                  onChange={handleInputChange}
-                  required
-                  className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bloodGlucose">
-                  Fasting Blood Glucose (mg/dL)
-                </Label>
-                <Input
-                  id="bloodGlucose"
-                  name="bloodGlucose"
-                  type="number"
-                  placeholder="e.g., 95"
-                  value={formData.bloodGlucose}
-                  onChange={handleInputChange}
-                  required
-                  className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="familyHistory">
-                  Family history of diabetes?
-                </Label>
-                <Select
-                  value={formData.familyHistory}
-                  onValueChange={(value) =>
-                    handleSelectChange("familyHistory", value)
-                  }
-                  required
-                >
-                  <SelectTrigger
-                    id="familyHistory"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
-                  >
-                    <SelectValue placeholder="Select option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="yes">Yes</SelectItem>
-                    <SelectItem value="no">No</SelectItem>
-                    <SelectItem value="unknown">Unknown</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="physicalActivity">
-                  Physical Activity Level
-                </Label>
-                <Select
-                  value={formData.physicalActivity}
-                  onValueChange={(value) =>
-                    handleSelectChange("physicalActivity", value)
-                  }
-                  required
-                >
-                  <SelectTrigger
-                    id="physicalActivity"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
-                  >
-                    <SelectValue placeholder="Select option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sedentary">Sedentary</SelectItem>
-                    <SelectItem value="light">Light (1-2 days/week)</SelectItem>
-                    <SelectItem value="moderate">
-                      Moderate (3-5 days/week)
-                    </SelectItem>
-                    <SelectItem value="active">
-                      Active (6-7 days/week)
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="diet">Diet Quality</Label>
-                <Select
-                  value={formData.diet}
-                  onValueChange={(value) => handleSelectChange("diet", value)}
-                  required
-                >
-                  <SelectTrigger
-                    id="diet"
-                    className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
-                  >
-                    <SelectValue placeholder="Select option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="poor">
-                      Poor (high in processed foods)
-                    </SelectItem>
-                    <SelectItem value="fair">
-                      Fair (occasional healthy choices)
-                    </SelectItem>
-                    <SelectItem value="good">
-                      Good (mostly balanced diet)
-                    </SelectItem>
-                    <SelectItem value="excellent">
-                      Excellent (well-balanced diet)
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="waistCircumference">
-                  Waist Circumference (cm)
-                </Label>
-                <Input
-                  id="waistCircumference"
-                  name="waistCircumference"
-                  type="number"
-                  placeholder="e.g., 85"
-                  value={formData.waistCircumference}
                   onChange={handleInputChange}
                   required
                   className="transition-all duration-300 focus:ring-2 focus:ring-amber-500"
@@ -1613,91 +1249,15 @@ function DiabetesAnalysis() {
               <Card className="p-6 border-0 shadow-md overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl opacity-70 -z-10"></div>
                 <div className="flex flex-col md:flex-row md:items-center gap-6">
-                  <div
-                    className={cn(
-                      "p-4 rounded-full self-center transition-all duration-500",
-                      result.riskLevel === "low"
-                        ? "bg-emerald-100"
-                        : result.riskLevel === "moderate"
-                        ? "bg-amber-100"
-                        : "bg-rose-100"
-                    )}
-                  >
-                    <Flask
-                      className={cn(
-                        "h-12 w-12",
-                        result.riskLevel === "low"
-                          ? "text-emerald-600"
-                          : result.riskLevel === "moderate"
-                          ? "text-amber-600"
-                          : "text-rose-600"
-                      )}
-                    />
+                  <div className="p-4 rounded-full bg-amber-100">
+                    <Flask className="h-12 w-12 text-amber-600" />
                   </div>
-
                   <div className="flex-1 text-center md:text-left">
-                    <h3 className="text-2xl font-bold mb-1">
-                      {result.riskLevel === "low"
-                        ? "Low"
-                        : result.riskLevel === "moderate"
-                        ? "Moderate"
-                        : "High"}{" "}
-                      Risk
-                    </h3>
-                    <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
-                      <div className="text-3xl font-bold">
-                        {result.riskScore}%
-                      </div>
-                      <div className="text-sm text-slate-500">
-                        5-year risk of developing type 2 diabetes
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1 text-sm justify-center md:justify-start">
-                      <BarChart3 className="h-4 w-4 text-slate-400" />
-                      <span className="text-slate-600">
-                        Analysis confidence: {result.confidence.toFixed(1)}%
-                      </span>
-                    </div>
+                    <h3 className="text-2xl font-bold mb-1">Analysis Result</h3>
+                    <p className="text-slate-600">{result}</p>
                   </div>
                 </div>
               </Card>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="p-6 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-amber-500" />
-                    Key Risk Factors
-                  </h3>
-                  <ul className="space-y-3">
-                    {result.keyFactors.map((factor, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <div className="rounded-full bg-slate-100 p-1 mt-0.5">
-                          <ArrowRight className="h-3 w-3 text-slate-600" />
-                        </div>
-                        <span className="text-sm">{factor}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-
-                <Card className="p-6 border-0 shadow-md hover:shadow-lg transition-all duration-300">
-                  <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <Flask className="h-5 w-5 text-amber-500" />
-                    Recommendations
-                  </h3>
-                  <ul className="space-y-3">
-                    {result.recommendations.map((rec, i) => (
-                      <li key={i} className="flex items-start gap-2">
-                        <div className="rounded-full bg-emerald-100 p-1 mt-0.5">
-                          <ArrowRight className="h-3 w-3 text-emerald-600" />
-                        </div>
-                        <span className="text-sm">{rec}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </Card>
-              </div>
 
               <Button
                 onClick={resetAnalysis}
