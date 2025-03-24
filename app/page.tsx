@@ -501,13 +501,13 @@ export default function HealthcareLanding() {
                       </div>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="w-full group border-[#0284c7] text-[#0284c7]"
+                  <Link
+                    href="/dailyhealth"
+                    className="w-full group border border-[#0284c7] text-[#0284c7] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
                   >
-                    Track Your Health
+                    Try AI Diagnostics
                     <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
+                  </Link>
                 </div>
               </Card>
 
