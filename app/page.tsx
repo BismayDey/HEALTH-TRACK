@@ -1,5 +1,5 @@
 "use client";
-
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -781,13 +781,13 @@ export default function HealthcareLanding() {
                       </div>
                     </div>
                   </div>
-                  <Button
-                    variant="outline"
-                    className="w-full group border-[#0284c7] text-[#0284c7]"
+                  <Link
+                    href="/healthrecom"
+                    className="w-full group border border-[#0284c7] text-[#0284c7] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
                   >
                     Get Recommendations
                     <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
+                  </Link>
                 </div>
               </Card>
             </div>
