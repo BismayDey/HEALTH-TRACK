@@ -120,7 +120,7 @@ export default function Home() {
             <div className="flex items-center justify-center">
               <div style={{ width: "500px", height: "250px" }}>
                 <DotLottieReact
-                  src="https://lottie.host/d1ed8f42-32b8-4681-848b-36b57d6cc288/0em0ayL45u.lottie"
+                  src="https://lottie.host/95a7ce8a-45e2-4d37-9ded-0f279695a94d/rzDWWpsZMM.lottie"
                   loop
                   autoplay
                 />
