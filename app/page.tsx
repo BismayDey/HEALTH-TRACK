@@ -887,7 +887,7 @@ export default function HealthcareLanding() {
                     name: "Dr. Paggu",
                     specialty: "Family Medicine",
                     image: "/paggu.jpg",
-                    education: "Harvard Medical School",
+                    education: "R.G. Kar Medical College and Hospital",
                   },
                   {
                     name: "Dr. Adi",
@@ -896,9 +896,9 @@ export default function HealthcareLanding() {
                     education: "Johns Hopkins University",
                   },
                   {
-                    name: "Dr. Emily Rodriguez",
+                    name: "Dr. Hansraj Hathi",
                     specialty: "Pediatrics",
-                    image: "/placeholder.svg?height=400&width=300",
+                    image: "/hati.jpg",
                     education: "Stanford University",
                   },
                 ].map((doctor, index) => (
@@ -980,22 +980,32 @@ export default function HealthcareLanding() {
                 <div className="space-y-6">
                   {[
                     {
-                      name: "Main Hospital",
-                      address: "123 Healthcare Ave, Medical District",
-                      phone: "(555) 123-4567",
+                      name: "R.G. Kar Medical College and Hospital",
+                      address:
+                        "1, Khudiram Bose Sarani, Kolkata – 700004, West Bengal, India",
+                      phone: "033-2555-7656 / 033-2555-7675",
                       hours: "Open 24/7",
                     },
                     {
-                      name: "North Clinic",
-                      address: "456 Wellness Blvd, North Side",
-                      phone: "(555) 234-5678",
-                      hours: "Mon-Fri: 8am-6pm, Sat: 9am-1pm",
+                      name: "Apollo Hospitals, Chennai",
+                      address:
+                        "21, Greams Lane, Off Greams Road, Chennai – 600006, India",
+                      phone: "+91 44 4040 1066",
+                      hours: "Open 24/7",
                     },
                     {
-                      name: "South Medical Center",
-                      address: "789 Health Street, South Side",
-                      phone: "(555) 345-6789",
-                      hours: "Mon-Fri: 8am-8pm, Sat-Sun: 10am-4pm",
+                      name: "Max Super Speciality Hospital, Saket",
+                      address:
+                        "12, Press Enclave Road, Saket Institutional Area, Saket, New Delhi – 110017, India",
+                      phone: "011-26515050",
+                      hours: "Open 24/7",
+                    },
+                    {
+                      name: "Peerless Hospital, Kolkata",
+                      address:
+                        "360 Panchasayar, Kolkata – 700094, West Bengal, India",
+                      phone: "+91 33 4011 1222",
+                      hours: "Open 24/7",
                     },
                   ].map((location, index) => (
                     <Card
