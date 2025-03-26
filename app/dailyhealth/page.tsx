@@ -1,936 +1,964 @@
 "use client";
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
-import Link from "next/link";
-import { useEffect, useState } from "react";
+
+import { useState, useEffect } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { MetricCard } from "@/components/metric-card";
+import { HealthDataForm } from "@/components/health-data-form";
+import { ProgressRing } from "@/components/progress-ring";
+import { HealthChart } from "@/components/health-chart";
+import { WaterTracker } from "@/components/water-tracker";
+import { SleepQuality } from "@/components/sleep-quality";
+import { MedicationTracker } from "@/components/medication-tracker";
+import { FoodDiary } from "@/components/food-diary";
+import { WorkoutTracker } from "@/components/workout-tracker";
+import { GoalsTracker } from "@/components/goals-tracker";
+import { MoodTracker } from "@/components/mood-tracker";
+import {
+  subscribeToTodayHealthData,
+  subscribeToHealthData,
+  checkAuthStatus,
+} from "@/lib/firebase-service";
+import type { HealthData } from "@/lib/types";
+import {
+  getWaterIntakeGoal,
+  getSleepRecommendation,
+  getHeartRateZone,
+  calculateBMI,
+  getBMICategory,
+} from "@/lib/health-utils";
 import {
   Heart,
-  Moon,
   Activity,
-  Apple,
-  ArrowLeft,
-  Plus,
-  Trash2,
-  Target,
-  Trophy,
-  TrendingUp,
-  Scale,
-  Calendar,
-  Droplets,
-  Brain,
-  Dumbbell,
-  Flame,
+  Moon,
   Utensils,
-  Bike,
+  Droplet,
+  Scale,
+  Footprints,
+  Plus,
+  BarChart3,
+  ArrowLeft,
+  User,
+  Bell,
+  Settings,
+  Thermometer,
+  TreesIcon as Lungs,
+  Dumbbell,
+  LogIn,
 } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
-import { auth, db } from "@/lib/firebase";
-import {
-  collection,
-  addDoc,
-  query,
-  where,
-  getDocs,
-  Timestamp,
-  orderBy,
-  limit,
-} from "firebase/firestore";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
-import { format } from "date-fns";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "@/components/ui/use-toast";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-// Register ChartJS components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
-
-interface HealthData {
-  heartRate: number;
-  sleepHours: number;
-  waterIntake: number;
-  steps: number;
-  weight: number;
-  mood: string;
-  stressLevel: number;
-  exerciseMinutes: number;
-  caloriesBurned: number;
-  bloodPressure: {
-    systolic: number;
-    diastolic: number;
-  };
-  meals: Meal[];
-  meditation: number;
-  date: Date;
-}
-
-interface Meal {
-  id: number;
-  name: string;
-  calories: number;
-  protein: number;
-  carbs: number;
-  fat: number;
-  time: string;
-}
-
-export default function HealthTracker() {
-  const { toast } = useToast();
-  const [healthData, setHealthData] = useState<HealthData>({
-    heartRate: 72,
-    sleepHours: 7.5,
-    waterIntake: 4,
-    steps: 8000,
-    weight: 70,
-    mood: "good",
-    stressLevel: 3,
-    exerciseMinutes: 30,
-    caloriesBurned: 300,
-    bloodPressure: {
-      systolic: 120,
-      diastolic: 80,
-    },
-    meditation: 15,
-    meals: [
-      {
-        id: 1,
-        name: "Breakfast",
-        calories: 400,
-        protein: 20,
-        carbs: 45,
-        fat: 15,
-        time: "08:00",
-      },
-      {
-        id: 2,
-        name: "Lunch",
-        calories: 600,
-        protein: 30,
-        carbs: 65,
-        fat: 20,
-        time: "13:00",
-      },
-    ],
-    date: new Date(),
-  });
-
+export default function HealthDashboard() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [showForm, setShowForm] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [todayData, setTodayData] = useState<HealthData | null>(null);
   const [historicalData, setHistoricalData] = useState<HealthData[]>([]);
-  const [streaks, setStreaks] = useState({
-    steps: 0,
-    sleep: 0,
-    water: 0,
-    meditation: 0,
-  });
-  const [goals, setGoals] = useState({
-    steps: 10000,
-    sleep: 8,
-    water: 8,
-    weight: 70,
-    exerciseMinutes: 45,
-    meditation: 20,
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  // User profile (in a real app, this would come from a user profile)
+  const userProfile = {
+    age: 35,
+    height: 175, // cm
+    weight: todayData?.weight || 70, // kg
+  };
 
   useEffect(() => {
-    loadHistoricalData();
+    // Check authentication status
+    const unsubscribeAuth = checkAuthStatus((isLoggedIn) => {
+      setIsAuthenticated(isLoggedIn);
+      setIsLoading(false);
+    });
+
+    return () => {
+      unsubscribeAuth();
+    };
   }, []);
 
-  const loadHistoricalData = async () => {
-    if (!auth.currentUser) return;
+  useEffect(() => {
+    // Only subscribe to data if authenticated
+    if (!isAuthenticated) return;
 
-    const healthRef = collection(db, "health_records");
-    const q = query(
-      healthRef,
-      where("userId", "==", auth.currentUser.uid),
-      orderBy("date", "desc"),
-      limit(7)
-    );
+    // Subscribe to today's health data
+    const unsubscribeToday = subscribeToTodayHealthData((data) => {
+      setTodayData(data);
+      setIsLoading(false);
+    });
 
-    try {
-      const querySnapshot = await getDocs(q);
-      const data = querySnapshot.docs.map(
-        (doc) =>
-          ({
-            ...doc.data(),
-            date: doc.data().date.toDate(),
-          } as HealthData)
-      );
+    // Subscribe to historical health data
+    const unsubscribeHistory = subscribeToHealthData(30, (data) => {
       setHistoricalData(data);
-      calculateStreaks(data);
-    } catch (error) {
-      console.error("Error loading historical data:", error);
-    }
-  };
+    });
 
-  const saveHealthData = async () => {
-    if (!auth.currentUser) {
-      toast({
-        title: "Error",
-        description: "Please sign in to save your data",
-        variant: "destructive",
-      });
-      return;
-    }
+    return () => {
+      unsubscribeToday();
+      unsubscribeHistory();
+    };
+  }, [isAuthenticated]);
 
-    try {
-      await addDoc(collection(db, "health_records"), {
-        ...healthData,
-        userId: auth.currentUser.uid,
-        date: Timestamp.fromDate(new Date()),
-      });
-
-      toast({
-        title: "Success",
-        description: "Health data saved successfully!",
-      });
-
-      loadHistoricalData();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save health data",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const calculateStreaks = (data: HealthData[]) => {
-    let stepStreak = 0;
-    let sleepStreak = 0;
-    let waterStreak = 0;
-    let meditationStreak = 0;
-
-    for (const record of data) {
-      if (record.steps >= goals.steps) stepStreak++;
-      else break;
-    }
-
-    for (const record of data) {
-      if (record.sleepHours >= goals.sleep) sleepStreak++;
-      else break;
-    }
-
-    for (const record of data) {
-      if (record.waterIntake >= goals.water) waterStreak++;
-      else break;
-    }
-
-    for (const record of data) {
-      if (record.meditation >= goals.meditation) meditationStreak++;
-      else break;
-    }
-
-    setStreaks({
-      steps: stepStreak,
-      sleep: sleepStreak,
-      water: waterStreak,
-      meditation: meditationStreak,
+  const handleFormSuccess = () => {
+    setShowForm(false);
+    toast({
+      title: "Success!",
+      description: "Your health data has been updated.",
     });
   };
 
-  const getHealthScore = () => {
-    let score = 0;
-    if (healthData.steps >= goals.steps) score += 20;
-    if (healthData.sleepHours >= goals.sleep) score += 20;
-    if (healthData.waterIntake >= goals.water) score += 15;
-    if (healthData.heartRate >= 60 && healthData.heartRate <= 100) score += 15;
-    if (healthData.exerciseMinutes >= goals.exerciseMinutes) score += 15;
-    if (healthData.meditation >= goals.meditation) score += 15;
-    return score;
+  const handleWaterUpdate = (newValue: number) => {
+    if (todayData) {
+      setTodayData({
+        ...todayData,
+        waterIntake: newValue,
+      });
+    }
   };
 
-  const getStressLevel = () => {
-    const level = healthData.stressLevel;
-    if (level <= 2) return { text: "Low", color: "text-green-500" };
-    if (level <= 4) return { text: "Moderate", color: "text-yellow-500" };
-    return { text: "High", color: "text-red-500" };
+  const handleMoodUpdate = (
+    newMood: "Very Bad" | "Bad" | "Neutral" | "Good" | "Very Good"
+  ) => {
+    if (todayData) {
+      setTodayData({
+        ...todayData,
+        mood: newMood,
+      });
+    }
   };
 
-  const chartData = {
-    labels: historicalData
-      .map((d) => format(new Date(d.date), "MMM dd"))
-      .reverse(),
-    datasets: [
-      {
-        label: "Steps",
-        data: historicalData.map((d) => d.steps).reverse(),
-        borderColor: "hsl(var(--chart-1))",
-        tension: 0.1,
-      },
-      {
-        label: "Sleep Hours",
-        data: historicalData.map((d) => d.sleepHours).reverse(),
-        borderColor: "hsl(var(--chart-2))",
-        tension: 0.1,
-      },
-      {
-        label: "Exercise Minutes",
-        data: historicalData.map((d) => d.exerciseMinutes).reverse(),
-        borderColor: "hsl(var(--chart-3))",
-        tension: 0.1,
-      },
-    ],
+  // Calculate recommended values
+  const waterGoal = getWaterIntakeGoal(userProfile.weight);
+  const sleepGoal = getSleepRecommendation(userProfile.age);
+  const bmi = calculateBMI(userProfile.weight, userProfile.height);
+  const bmiCategory = getBMICategory(bmi);
+
+  // Calculate trends (comparing to yesterday or average of last 7 days)
+  const calculateTrend = (metric: keyof HealthData, current: number) => {
+    if (historicalData.length < 2)
+      return { trend: "neutral", value: "No data" };
+
+    const yesterday = historicalData[1][metric] as number;
+    const diff = current - yesterday;
+    const percentage = yesterday ? Math.round((diff / yesterday) * 100) : 0;
+
+    return {
+      trend: diff > 0 ? "up" : diff < 0 ? "down" : "neutral",
+      value: `${Math.abs(percentage)}% from yesterday`,
+    };
   };
+
+  // If still checking authentication status
+  if (isAuthenticated === null) {
+    return (
+      <div className="container mx-auto py-6 flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, show login prompt
+  if (!isAuthenticated) {
+    return (
+      <div className="container mx-auto py-6 flex items-center justify-center min-h-screen">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>
+              Please sign in to access your health dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col items-center">
+            <p className="mb-6 text-center">
+              You need to be logged in to view and track your health data.
+              Please sign in to continue.
+            </p>
+            <Button onClick={() => router.push("/auth")}>
+              <LogIn className="mr-2 h-4 w-4" />
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
+    <div className="container mx-auto py-6 space-y-8">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex items-center">
+          <Link href="/" className="mr-4">
+            <Button variant="outline" size="icon" className="h-9 w-9">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="sr-only">Back to Home</span>
+            </Button>
+          </Link>
           <div>
-            <h1 className="text-4xl font-bold text-primary">
-              Holistic Health Dashboard
+            <h1 className="text-3xl font-bold tracking-tight">
+              Health Dashboard
             </h1>
             <p className="text-muted-foreground">
-              Your wellness score today: {getHealthScore()}%
+              Track your daily health metrics and visualize your progress
             </p>
-          </div>
-          <div className="flex gap-4">
-            <Button
-              onClick={saveHealthData}
-              className="bg-primary hover:bg-primary/90"
-            >
-              Save Today's Data
-            </Button>
-            <Link href="/">
-              <Button variant="outline" size="icon">
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-            </Link>
           </div>
         </div>
 
-        <Tabs defaultValue="tracking" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
-            <TabsTrigger value="tracking">Daily Tracking</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="goals">Goals & Progress</TabsTrigger>
-          </TabsList>
+        <div className="flex gap-2">
+          <Button variant="outline" size="icon" className="h-9 w-9">
+            <Bell className="h-4 w-4" />
+            <span className="sr-only">Notifications</span>
+          </Button>
+          <Button variant="outline" size="icon" className="h-9 w-9">
+            <Settings className="h-4 w-4" />
+            <span className="sr-only">Settings</span>
+          </Button>
+          <Button variant="outline" size="icon" className="h-9 w-9">
+            <User className="h-4 w-4" />
+            <span className="sr-only">Profile</span>
+          </Button>
+          <Button onClick={() => setShowForm(!showForm)}>
+            <Plus className="mr-2 h-4 w-4" />
+            {showForm ? "Cancel" : "Log Today's Health"}
+          </Button>
+        </div>
+      </header>
 
-          <TabsContent value="tracking" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Card className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-center space-x-4">
-                  <Heart className="h-8 w-8 text-red-500" />
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold">Vitals</h2>
-                    <div className="space-y-3 mt-4">
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Heart Rate
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.heartRate}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                heartRate: Number(e.target.value),
-                              })
-                            }
-                            className="w-20"
-                          />
-                          <span>bpm</span>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Blood Pressure
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.bloodPressure.systolic}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                bloodPressure: {
-                                  ...healthData.bloodPressure,
-                                  systolic: Number(e.target.value),
-                                },
-                              })
-                            }
-                            className="w-20"
-                          />
-                          <span>/</span>
-                          <Input
-                            type="number"
-                            value={healthData.bloodPressure.diastolic}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                bloodPressure: {
-                                  ...healthData.bloodPressure,
-                                  diastolic: Number(e.target.value),
-                                },
-                              })
-                            }
-                            className="w-20"
-                          />
-                          <span>mmHg</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+      <AnimatePresence>
+        {showForm && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <HealthDataForm onSuccess={handleFormSuccess} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-              <Card className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-center space-x-4">
-                  <Activity className="h-8 w-8 text-emerald-500" />
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold">Activity</h2>
-                    <div className="space-y-3 mt-4">
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Steps
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.steps}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                steps: Number(e.target.value),
-                              })
-                            }
-                            className="w-24"
-                          />
-                          <Progress
-                            value={(healthData.steps / goals.steps) * 100}
-                            className="flex-1"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Exercise Minutes
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.exerciseMinutes}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                exerciseMinutes: Number(e.target.value),
-                              })
-                            }
-                            className="w-20"
-                          />
-                          <span>min</span>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Calories Burned
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.caloriesBurned}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                caloriesBurned: Number(e.target.value),
-                              })
-                            }
-                            className="w-20"
-                          />
-                          <span>kcal</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+      <Tabs
+        defaultValue="dashboard"
+        value={activeTab}
+        onValueChange={setActiveTab}
+      >
+        <TabsList className="grid w-full grid-cols-4 md:w-auto md:inline-flex">
+          <TabsTrigger value="dashboard">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Dashboard
+          </TabsTrigger>
+          <TabsTrigger value="health">
+            <Heart className="mr-2 h-4 w-4" />
+            Health
+          </TabsTrigger>
+          <TabsTrigger value="nutrition">
+            <Utensils className="mr-2 h-4 w-4" />
+            Nutrition
+          </TabsTrigger>
+          <TabsTrigger value="fitness">
+            <Dumbbell className="mr-2 h-4 w-4" />
+            Fitness
+          </TabsTrigger>
+        </TabsList>
 
-              <Card className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-center space-x-4">
-                  <Brain className="h-8 w-8 text-purple-500" />
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold">Mental Wellness</h2>
-                    <div className="space-y-3 mt-4">
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Stress Level (1-5)
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.stressLevel}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                stressLevel: Number(e.target.value),
-                              })
-                            }
-                            min="1"
-                            max="5"
-                            className="w-20"
-                          />
-                          <span className={getStressLevel().color}>
-                            {getStressLevel().text}
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Meditation
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.meditation}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                meditation: Number(e.target.value),
-                              })
-                            }
-                            className="w-20"
-                          />
-                          <span>min</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-center space-x-4">
-                  <Moon className="h-8 w-8 text-blue-500" />
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold">Sleep & Rest</h2>
-                    <div className="space-y-3 mt-4">
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Sleep Duration
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.sleepHours}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                sleepHours: Number(e.target.value),
-                              })
-                            }
-                            step="0.5"
-                            className="w-20"
-                          />
-                          <span>hours</span>
-                        </div>
-                      </div>
-                      <Progress
-                        value={(healthData.sleepHours / goals.sleep) * 100}
-                        className="mt-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-center space-x-4">
-                  <Droplets className="h-8 w-8 text-cyan-500" />
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold">Hydration</h2>
-                    <div className="space-y-3 mt-4">
-                      <div>
-                        <label className="text-sm text-muted-foreground">
-                          Water Intake
-                        </label>
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            type="number"
-                            value={healthData.waterIntake}
-                            onChange={(e) =>
-                              setHealthData({
-                                ...healthData,
-                                waterIntake: Number(e.target.value),
-                              })
-                            }
-                            className="w-20"
-                          />
-                          <span>glasses</span>
-                        </div>
-                      </div>
-                      <Progress
-                        value={(healthData.waterIntake / goals.water) * 100}
-                        className="mt-2"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-6 hover:shadow-lg transition-shadow">
-                <div className="flex items-center space-x-4">
-                  <Utensils className="h-8 w-8 text-orange-500" />
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-semibold">Nutrition</h2>
-                    <div className="space-y-4 mt-4">
-                      {healthData.meals.map((meal, index) => (
-                        <div key={meal.id} className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <input
-                              type="text"
-                              value={meal.name}
-                              onChange={(e) => {
-                                const newMeals = [...healthData.meals];
-                                newMeals[index] = {
-                                  ...meal,
-                                  name: e.target.value,
-                                };
-                                setHealthData({
-                                  ...healthData,
-                                  meals: newMeals,
-                                });
-                              }}
-                              className="text-sm font-medium bg-transparent border-none focus:outline-none"
-                            />
-                            <input
-                              type="time"
-                              value={meal.time}
-                              onChange={(e) => {
-                                const newMeals = [...healthData.meals];
-                                newMeals[index] = {
-                                  ...meal,
-                                  time: e.target.value,
-                                };
-                                setHealthData({
-                                  ...healthData,
-                                  meals: newMeals,
-                                });
-                              }}
-                              className="text-sm text-muted-foreground bg-transparent border-none focus:outline-none"
-                            />
-                          </div>
-                          <div className="grid grid-cols-4 gap-2">
-                            <div>
-                              <Input
-                                type="number"
-                                value={meal.calories}
-                                onChange={(e) => {
-                                  const newMeals = [...healthData.meals];
-                                  newMeals[index] = {
-                                    ...meal,
-                                    calories: Number(e.target.value),
-                                  };
-                                  setHealthData({
-                                    ...healthData,
-                                    meals: newMeals,
-                                  });
-                                }}
-                                className="w-full"
-                                placeholder="kcal"
-                              />
-                              <span className="text-xs text-muted-foreground">
-                                kcal
-                              </span>
-                            </div>
-                            <div>
-                              <Input
-                                type="number"
-                                value={meal.protein}
-                                onChange={(e) => {
-                                  const newMeals = [...healthData.meals];
-                                  newMeals[index] = {
-                                    ...meal,
-                                    protein: Number(e.target.value),
-                                  };
-                                  setHealthData({
-                                    ...healthData,
-                                    meals: newMeals,
-                                  });
-                                }}
-                                className="w-full"
-                                placeholder="protein"
-                              />
-                              <span className="text-xs text-muted-foreground">
-                                g protein
-                              </span>
-                            </div>
-                            <div>
-                              <Input
-                                type="number"
-                                value={meal.carbs}
-                                onChange={(e) => {
-                                  const newMeals = [...healthData.meals];
-                                  newMeals[index] = {
-                                    ...meal,
-                                    carbs: Number(e.target.value),
-                                  };
-                                  setHealthData({
-                                    ...healthData,
-                                    meals: newMeals,
-                                  });
-                                }}
-                                className="w-full"
-                                placeholder="carbs"
-                              />
-                              <span className="text-xs text-muted-foreground">
-                                g carbs
-                              </span>
-                            </div>
-                            <div>
-                              <Input
-                                type="number"
-                                value={meal.fat}
-                                onChange={(e) => {
-                                  const newMeals = [...healthData.meals];
-                                  newMeals[index] = {
-                                    ...meal,
-                                    fat: Number(e.target.value),
-                                  };
-                                  setHealthData({
-                                    ...healthData,
-                                    meals: newMeals,
-                                  });
-                                }}
-                                className="w-full"
-                                placeholder="fat"
-                              />
-                              <span className="text-xs text-muted-foreground">
-                                g fat
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full mt-2"
-                        onClick={() => {
-                          const newMeal = {
-                            id: Date.now(),
-                            name: "New Meal",
-                            calories: 0,
-                            protein: 0,
-                            carbs: 0,
-                            fat: 0,
-                            time: "12:00",
-                          };
-                          setHealthData({
-                            ...healthData,
-                            meals: [...healthData.meals, newMeal],
-                          });
-                        }}
-                      >
-                        <Plus className="h-4 w-4 mr-2" /> Add Meal
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+        <TabsContent value="dashboard" className="space-y-6">
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Card key={i} className="w-full h-[120px] animate-pulse">
+                  <CardContent className="p-6">
+                    <div className="h-4 bg-muted rounded w-1/2 mb-2"></div>
+                    <div className="h-8 bg-muted rounded w-1/3"></div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          </TabsContent>
+          ) : todayData ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <MetricCard
+                  title="Heart Rate"
+                  value={`${todayData.heartRate} bpm`}
+                  description={getHeartRateZone(
+                    todayData.heartRate,
+                    userProfile.age
+                  )}
+                  icon={Heart}
+                  color="danger"
+                  {...calculateTrend("heartRate", todayData.heartRate)}
+                />
 
-          <TabsContent value="analytics" className="space-y-6">
-            <Card className="p-6">
-              <h3 className="text-xl font-semibold mb-4">Weekly Progress</h3>
-              <div className="h-[400px]">
-                <Line
-                  data={chartData}
-                  options={{
-                    maintainAspectRatio: false,
-                    scales: {
-                      y: {
-                        beginAtZero: true,
-                      },
-                    },
-                  }}
+                <MetricCard
+                  title="Blood Pressure"
+                  value={`${todayData.bloodPressure.systolic}/${todayData.bloodPressure.diastolic}`}
+                  description="Systolic/Diastolic"
+                  icon={Activity}
+                  color="warning"
+                />
+
+                <MetricCard
+                  title="Sleep"
+                  value={`${todayData.sleepHours} hrs`}
+                  description={todayData.sleepQuality}
+                  icon={Moon}
+                  color="primary"
+                  {...calculateTrend("sleepHours", todayData.sleepHours)}
+                />
+
+                <MetricCard
+                  title="Steps"
+                  value={todayData.steps.toLocaleString()}
+                  description={
+                    todayData.steps >= 10000
+                      ? "Goal reached!"
+                      : `${Math.round(todayData.steps / 100)}% of 10,000 goal`
+                  }
+                  icon={Footprints}
+                  color="success"
+                  {...calculateTrend("steps", todayData.steps)}
+                />
+
+                <MetricCard
+                  title="Calories Burned"
+                  value={todayData.caloriesBurned.toLocaleString()}
+                  description="Active calories"
+                  icon={Activity}
+                  color="success"
+                  {...calculateTrend(
+                    "caloriesBurned",
+                    todayData.caloriesBurned
+                  )}
+                />
+
+                <MetricCard
+                  title="Calories Consumed"
+                  value={todayData.caloriesConsumed.toLocaleString()}
+                  description="Nutritional intake"
+                  icon={Utensils}
+                  color="warning"
+                  {...calculateTrend(
+                    "caloriesConsumed",
+                    todayData.caloriesConsumed
+                  )}
+                />
+
+                <MetricCard
+                  title="Water Intake"
+                  value={`${todayData.waterIntake} ml`}
+                  description={`${Math.round(
+                    (todayData.waterIntake / waterGoal) * 100
+                  )}% of daily goal`}
+                  icon={Droplet}
+                  color="primary"
+                  {...calculateTrend("waterIntake", todayData.waterIntake)}
+                />
+
+                <MetricCard
+                  title="Weight"
+                  value={`${todayData.weight} kg`}
+                  description={`BMI: ${bmi.toFixed(1)} (${bmiCategory})`}
+                  icon={Scale}
+                  color={
+                    bmiCategory === "Normal weight" ? "success" : "warning"
+                  }
+                  {...calculateTrend("weight", todayData.weight)}
+                />
+
+                {todayData.bodyTemperature && (
+                  <MetricCard
+                    title="Body Temperature"
+                    value={`${todayData.bodyTemperature}°C`}
+                    description={
+                      todayData.bodyTemperature > 37.5 ? "Elevated" : "Normal"
+                    }
+                    icon={Thermometer}
+                    color={
+                      todayData.bodyTemperature > 37.5 ? "danger" : "success"
+                    }
+                  />
+                )}
+
+                {todayData.oxygenSaturation && (
+                  <MetricCard
+                    title="Oxygen Saturation"
+                    value={`${todayData.oxygenSaturation}%`}
+                    description={
+                      todayData.oxygenSaturation < 95 ? "Low" : "Normal"
+                    }
+                    icon={Lungs}
+                    color={
+                      todayData.oxygenSaturation < 95 ? "danger" : "success"
+                    }
+                  />
+                )}
+
+                {todayData.stressLevel && (
+                  <MetricCard
+                    title="Stress Level"
+                    value={`${todayData.stressLevel}/10`}
+                    description={
+                      todayData.stressLevel > 7
+                        ? "High"
+                        : todayData.stressLevel > 4
+                        ? "Moderate"
+                        : "Low"
+                    }
+                    icon={Activity}
+                    color={
+                      todayData.stressLevel > 7
+                        ? "danger"
+                        : todayData.stressLevel > 4
+                        ? "warning"
+                        : "success"
+                    }
+                  />
+                )}
+
+                {todayData.glucoseLevel && (
+                  <MetricCard
+                    title="Glucose Level"
+                    value={`${todayData.glucoseLevel} mg/dL`}
+                    description={
+                      todayData.glucoseLevel > 140
+                        ? "High"
+                        : todayData.glucoseLevel < 70
+                        ? "Low"
+                        : "Normal"
+                    }
+                    icon={Activity}
+                    color={
+                      todayData.glucoseLevel > 140 ||
+                      todayData.glucoseLevel < 70
+                        ? "danger"
+                        : "success"
+                    }
+                  />
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <WaterTracker
+                  currentIntake={todayData.waterIntake}
+                  goal={waterGoal}
+                  healthDataId={todayData.id}
+                  onUpdate={handleWaterUpdate}
+                />
+
+                <MoodTracker
+                  currentMood={todayData.mood}
+                  healthDataId={todayData.id}
+                  onUpdate={handleMoodUpdate}
                 />
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SleepQuality
+                  hours={todayData.sleepHours}
+                  quality={todayData.sleepQuality}
+                  recommendedHours={sleepGoal}
+                />
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Calorie Balance</CardTitle>
+                    <CardDescription>
+                      Calories consumed vs. burned today
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex flex-col items-center">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+                      <div className="flex flex-col items-center">
+                        <ProgressRing
+                          value={todayData.caloriesConsumed}
+                          max={2500}
+                          color="hsl(var(--yellow-500))"
+                          label="Consumed"
+                        />
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Daily Goal: 2,500
+                        </p>
+                      </div>
+
+                      <div className="text-2xl font-bold">-</div>
+
+                      <div className="flex flex-col items-center">
+                        <ProgressRing
+                          value={todayData.caloriesBurned}
+                          max={2500}
+                          color="hsl(var(--green-500))"
+                          label="Burned"
+                        />
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Goal: 500+
+                        </p>
+                      </div>
+
+                      <div className="text-2xl font-bold">=</div>
+
+                      <div className="flex flex-col items-center">
+                        <motion.div
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.5, duration: 0.3 }}
+                          className="text-3xl font-bold"
+                        >
+                          {todayData.caloriesConsumed -
+                            todayData.caloriesBurned}
+                        </motion.div>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                          Net Calories
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <MedicationTracker />
+
+              <GoalsTracker />
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Daily Notes</CardTitle>
+                  <CardDescription>
+                    Your health journal for today
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm">
+                    {todayData.notes ||
+                      "No notes for today. Add notes when logging your health data."}
+                  </p>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>No Data Available</CardTitle>
+                <CardDescription>
+                  You haven't logged your health data for today
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">
+                  Start tracking your health by logging your first entry.
+                </p>
+                <Button onClick={() => setShowForm(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Log Health Data
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="health" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Heart className="mr-2 h-5 w-5" />
+                  Vital Signs
+                </CardTitle>
+                <CardDescription>
+                  Track your vital health metrics
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="h-12 bg-muted rounded"></div>
+                    ))}
+                  </div>
+                ) : todayData ? (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center p-3 rounded-lg border border-border">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-red-100 text-red-600 dark:bg-red-950 dark:text-red-400">
+                          <Heart className="h-5 w-5" />
+                        </div>
+                        <div className="ml-3">
+                          <h4 className="font-medium">Heart Rate</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {getHeartRateZone(
+                              todayData.heartRate,
+                              userProfile.age
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-xl font-bold">
+                        {todayData.heartRate} bpm
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center p-3 rounded-lg border border-border">
+                      <div className="flex items-center">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
+                          <Activity className="h-5 w-5" />
+                        </div>
+                        <div className="ml-3">
+                          <h4 className="font-medium">Blood Pressure</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Systolic/Diastolic
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-xl font-bold">
+                        {todayData.bloodPressure.systolic}/
+                        {todayData.bloodPressure.diastolic}
+                      </div>
+                    </div>
+
+                    {todayData.bodyTemperature && (
+                      <div className="flex justify-between items-center p-3 rounded-lg border border-border">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-orange-100 text-orange-600 dark:bg-orange-950 dark:text-orange-400">
+                            <Thermometer className="h-5 w-5" />
+                          </div>
+                          <div className="ml-3">
+                            <h4 className="font-medium">Body Temperature</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {todayData.bodyTemperature > 37.5
+                                ? "Elevated"
+                                : "Normal"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-xl font-bold">
+                          {todayData.bodyTemperature}°C
+                        </div>
+                      </div>
+                    )}
+
+                    {todayData.oxygenSaturation && (
+                      <div className="flex justify-between items-center p-3 rounded-lg border border-border">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-600 dark:bg-blue-950 dark:text-blue-400">
+                            <Lungs className="h-5 w-5" />
+                          </div>
+                          <div className="ml-3">
+                            <h4 className="font-medium">Oxygen Saturation</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {todayData.oxygenSaturation < 95
+                                ? "Low"
+                                : "Normal"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-xl font-bold">
+                          {todayData.oxygenSaturation}%
+                        </div>
+                      </div>
+                    )}
+
+                    {todayData.glucoseLevel && (
+                      <div className="flex justify-between items-center p-3 rounded-lg border border-border">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-purple-100 text-purple-600 dark:bg-purple-950 dark:text-purple-400">
+                            <Activity className="h-5 w-5" />
+                          </div>
+                          <div className="ml-3">
+                            <h4 className="font-medium">Glucose Level</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {todayData.glucoseLevel > 140
+                                ? "High"
+                                : todayData.glucoseLevel < 70
+                                ? "Low"
+                                : "Normal"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-xl font-bold">
+                          {todayData.glucoseLevel} mg/dL
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="mb-4">
+                      No vital signs data available for today.
+                    </p>
+                    <Button onClick={() => setShowForm(true)}>
+                      Log Health Data
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-2">Step Streak</h3>
-                <div className="flex items-center space-x-2">
-                  <Trophy className="h-5 w-5 text-yellow-500" />
-                  <span className="text-2xl font-bold">
-                    {streaks.steps} days
-                  </span>
-                </div>
-              </Card>
+            <MedicationTracker />
+          </div>
 
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-2">Sleep Streak</h3>
-                <div className="flex items-center space-x-2">
-                  <Moon className="h-5 w-5 text-blue-500" />
-                  <span className="text-2xl font-bold">
-                    {streaks.sleep} days
-                  </span>
-                </div>
-              </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SleepQuality
+              hours={todayData?.sleepHours || 0}
+              quality={todayData?.sleepQuality || "Good"}
+              recommendedHours={sleepGoal}
+            />
 
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-2">Water Streak</h3>
-                <div className="flex items-center space-x-2">
-                  <Droplets className="h-5 w-5 text-cyan-500" />
-                  <span className="text-2xl font-bold">
-                    {streaks.water} days
-                  </span>
-                </div>
-              </Card>
+            <MoodTracker
+              currentMood={todayData?.mood || "Good"}
+              healthDataId={todayData?.id}
+              onUpdate={handleMoodUpdate}
+            />
+          </div>
 
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-2">
-                  Meditation Streak
-                </h3>
-                <div className="flex items-center space-x-2">
-                  <Brain className="h-5 w-5 text-purple-500" />
-                  <span className="text-2xl font-bold">
-                    {streaks.meditation} days
-                  </span>
-                </div>
-              </Card>
-            </div>
-          </TabsContent>
+          <HealthChart data={historicalData} />
+        </TabsContent>
 
-          <TabsContent value="goals" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="p-6">
-                <h3 className="text-xl font-semibold mb-4">Daily Goals</h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium">Steps Target</label>
-                    <Input
-                      type="number"
-                      value={goals.steps}
-                      onChange={(e) =>
-                        setGoals({ ...goals, steps: Number(e.target.value) })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Sleep Hours</label>
-                    <Input
-                      type="number"
-                      value={goals.sleep}
-                      onChange={(e) =>
-                        setGoals({ ...goals, sleep: Number(e.target.value) })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">Water Glasses</label>
-                    <Input
-                      type="number"
-                      value={goals.water}
-                      onChange={(e) =>
-                        setGoals({ ...goals, water: Number(e.target.value) })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">
-                      Exercise Minutes
-                    </label>
-                    <Input
-                      type="number"
-                      value={goals.exerciseMinutes}
-                      onChange={(e) =>
-                        setGoals({
-                          ...goals,
-                          exerciseMinutes: Number(e.target.value),
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium">
-                      Meditation Minutes
-                    </label>
-                    <Input
-                      type="number"
-                      value={goals.meditation}
-                      onChange={(e) =>
-                        setGoals({
-                          ...goals,
-                          meditation: Number(e.target.value),
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </Card>
+        <TabsContent value="nutrition" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <WaterTracker
+              currentIntake={todayData?.waterIntake || 0}
+              goal={waterGoal}
+              healthDataId={todayData?.id}
+              onUpdate={handleWaterUpdate}
+            />
 
-              <Card className="p-6">
-                <h3 className="text-xl font-semibold mb-4">Achievements</h3>
-                <div className="space-y-4">
-                  {streaks.steps >= 7 && (
-                    <div className="flex items-center space-x-3 p-3 bg-yellow-500/10 rounded-lg">
-                      <Trophy className="h-6 w-6 text-yellow-500" />
-                      <span>Week Warrior: 7-day step goal streak!</span>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Utensils className="mr-2 h-5 w-5" />
+                  Nutrition Summary
+                </CardTitle>
+                <CardDescription>Today's nutritional intake</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-12 bg-muted rounded"></div>
+                    ))}
+                  </div>
+                ) : todayData ? (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm font-medium">
+                        Calories Consumed
+                      </div>
+                      <div className="text-xl font-bold">
+                        {todayData.caloriesConsumed} cal
+                      </div>
                     </div>
-                  )}
-                  {streaks.sleep >= 5 && (
-                    <div className="flex items-center space-x-3 p-3 bg-blue-500/10 rounded-lg">
-                      <Moon className="h-6 w-6 text-blue-500" />
-                      <span>Sleep Master: 5-day sleep goal streak!</span>
+                    <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-primary"
+                        initial={{ width: 0 }}
+                        animate={{
+                          width: `${Math.min(
+                            (todayData.caloriesConsumed / 2500) * 100,
+                            100
+                          )}%`,
+                        }}
+                        transition={{ duration: 1 }}
+                      />
                     </div>
-                  )}
-                  {streaks.meditation >= 3 && (
-                    <div className="flex items-center space-x-3 p-3 bg-purple-500/10 rounded-lg">
-                      <Brain className="h-6 w-6 text-purple-500" />
-                      <span>Zen Master: 3-day meditation streak!</span>
+                    <div className="text-xs text-muted-foreground text-right">
+                      {Math.round((todayData.caloriesConsumed / 2500) * 100)}%
+                      of daily goal (2,500 cal)
                     </div>
-                  )}
-                  {getHealthScore() >= 90 && (
-                    <div className="flex items-center space-x-3 p-3 bg-green-500/10 rounded-lg">
-                      <Target className="h-6 w-6 text-green-500" />
-                      <span>Health Champion: 90+ wellness score!</span>
+
+                    <div className="grid grid-cols-3 gap-2 mt-4">
+                      <div className="bg-muted/50 p-2 rounded-md text-center">
+                        <div className="text-lg font-bold">55%</div>
+                        <div className="text-xs text-muted-foreground">
+                          Carbs
+                        </div>
+                      </div>
+                      <div className="bg-muted/50 p-2 rounded-md text-center">
+                        <div className="text-lg font-bold">25%</div>
+                        <div className="text-xs text-muted-foreground">
+                          Protein
+                        </div>
+                      </div>
+                      <div className="bg-muted/50 p-2 rounded-md text-center">
+                        <div className="text-lg font-bold">20%</div>
+                        <div className="text-xs text-muted-foreground">Fat</div>
+                      </div>
                     </div>
-                  )}
-                  {healthData.exerciseMinutes >=
-                    goals.exerciseMinutes * 1.5 && (
-                    <div className="flex items-center space-x-3 p-3 bg-emerald-500/10 rounded-lg">
-                      <Dumbbell className="h-6 w-6 text-emerald-500" />
-                      <span>
-                        Exercise Enthusiast: Exceeded exercise goal by 50%!
-                      </span>
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="mb-4">
+                      No nutrition data available for today.
+                    </p>
+                    <Button onClick={() => setShowForm(true)}>
+                      Log Health Data
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <FoodDiary />
+        </TabsContent>
+
+        <TabsContent value="fitness" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Footprints className="mr-2 h-5 w-5" />
+                  Activity Summary
+                </CardTitle>
+                <CardDescription>Today's physical activity</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="h-12 bg-muted rounded"></div>
+                    ))}
+                  </div>
+                ) : todayData ? (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm font-medium">Steps</div>
+                      <div className="text-xl font-bold">
+                        {todayData.steps.toLocaleString()} steps
+                      </div>
                     </div>
-                  )}
-                </div>
-              </Card>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
+                    <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-green-500"
+                        initial={{ width: 0 }}
+                        animate={{
+                          width: `${Math.min(
+                            (todayData.steps / 10000) * 100,
+                            100
+                          )}%`,
+                        }}
+                        transition={{ duration: 1 }}
+                      />
+                    </div>
+                    <div className="text-xs text-muted-foreground text-right">
+                      {Math.round((todayData.steps / 10000) * 100)}% of daily
+                      goal (10,000 steps)
+                    </div>
+
+                    <div className="flex justify-between items-center mt-4">
+                      <div className="text-sm font-medium">Calories Burned</div>
+                      <div className="text-xl font-bold">
+                        {todayData.caloriesBurned} cal
+                      </div>
+                    </div>
+                    <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-red-500"
+                        initial={{ width: 0 }}
+                        animate={{
+                          width: `${Math.min(
+                            (todayData.caloriesBurned / 500) * 100,
+                            100
+                          )}%`,
+                        }}
+                        transition={{ duration: 1 }}
+                      />
+                    </div>
+                    <div className="text-xs text-muted-foreground text-right">
+                      {Math.round((todayData.caloriesBurned / 500) * 100)}% of
+                      daily goal (500 cal)
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="mb-4">
+                      No activity data available for today.
+                    </p>
+                    <Button onClick={() => setShowForm(true)}>
+                      Log Health Data
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Scale className="mr-2 h-5 w-5" />
+                  Weight Tracking
+                </CardTitle>
+                <CardDescription>Monitor your weight over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="animate-pulse space-y-4">
+                    <div className="h-40 bg-muted rounded"></div>
+                  </div>
+                ) : todayData ? (
+                  <div className="space-y-4">
+                    <div className="flex justify-center">
+                      <ProgressRing
+                        value={todayData.weight}
+                        max={100}
+                        size={150}
+                        strokeWidth={12}
+                        color="hsl(var(--primary))"
+                        label="Current Weight"
+                        unit="kg"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div className="bg-muted/50 p-3 rounded-md text-center">
+                        <div className="text-lg font-bold">
+                          {bmi.toFixed(1)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">BMI</div>
+                        <div
+                          className={`text-xs mt-1 ${
+                            bmiCategory === "Normal weight"
+                              ? "text-green-500"
+                              : "text-yellow-500"
+                          }`}
+                        >
+                          {bmiCategory}
+                        </div>
+                      </div>
+                      <div className="bg-muted/50 p-3 rounded-md text-center">
+                        <div className="text-lg font-bold">
+                          {userProfile.height} cm
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Height
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <p className="mb-4">No weight data available for today.</p>
+                    <Button onClick={() => setShowForm(true)}>
+                      Log Health Data
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <WorkoutTracker />
+
+          <GoalsTracker />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
