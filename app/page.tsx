@@ -980,13 +980,6 @@ export default function HealthcareLanding() {
                 <div className="space-y-6">
                   {[
                     {
-                      name: "R.G. Kar Medical College and Hospital",
-                      address:
-                        "1, Khudiram Bose Sarani, Kolkata – 700004, West Bengal, India",
-                      phone: "033-2555-7656 / 033-2555-7675",
-                      hours: "Open 24/7",
-                    },
-                    {
                       name: "Apollo Hospitals, Chennai",
                       address:
                         "21, Greams Lane, Off Greams Road, Chennai – 600006, India",
@@ -1052,7 +1045,7 @@ export default function HealthcareLanding() {
                 </div>
                 <div className="relative h-[400px] rounded-xl overflow-hidden shadow-md">
                   <Image
-                    src="/placeholder.svg?height=400&width=600"
+                    src="/map.png"
                     alt="Map of our locations"
                     fill
                     className="object-cover"
@@ -1150,9 +1143,7 @@ export default function HealthcareLanding() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-[#0f172a]">Phone</h3>
-                      <p className="text-[#64748b]">
-                        1-800-HEALTH (1-800-432-5844)
-                      </p>
+                      <p className="text-[#64748b]">+91 33 4011 1222</p>
                       <p className="text-sm text-[#64748b]">
                         Available 24/7 for emergencies
                       </p>
@@ -1179,7 +1170,7 @@ export default function HealthcareLanding() {
                         Main Location
                       </h3>
                       <p className="text-[#64748b]">
-                        123 Healthcare Ave, Medical District
+                        360 Panchasayar, Kolkata – 700094, West Bengal, India
                       </p>
                       <p className="text-sm text-[#64748b]">Open 24/7</p>
                     </div>
