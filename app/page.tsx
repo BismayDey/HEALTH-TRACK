@@ -11,6 +11,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -297,12 +298,11 @@ export default function HealthcareLanding() {
                 <div className="relative">
                   <div className="absolute -top-6 -left-6 w-24 h-24 bg-[#0284c7]/10 rounded-full blur-xl"></div>
                   <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#0284c7]/10 rounded-full blur-xl"></div>
-                  <Image
-                    src="https://i.postimg.cc/1tgMWdk3/DALL-E-2025-03-23-14-47-11-A-health-related-abstract-modern-design-featuring-smooth-gradients-and.webp"
-                    width={550}
-                    height={550}
-                    alt="Healthcare professionals"
-                    className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square shadow-md"
+                  <DotLottieReact
+                    src="https://lottie.host/dbb9634e-fda1-4e7f-8118-de18aa7f3833/bI50uEmxYv.lottie"
+                    autoplay
+                    className="mx-auto aspect-video overflow-hidden rounded-xl sm:w-full lg:order-last lg:aspect-square"
+                    style={{ width: 550, height: 550 }}
                   />
                 </div>
               </div>
