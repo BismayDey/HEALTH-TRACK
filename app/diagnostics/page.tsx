@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState("skin");
@@ -116,14 +117,14 @@ export default function Home() {
 
           <div className="relative mx-auto max-w-5xl mt-10">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-xl -z-10 transform -rotate-1"></div>
-            <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-slate-200">
-              <Image
-                src="/placeholder.svg?height=600&width=1200"
-                alt="AI Diagnostics Dashboard"
-                width={1200}
-                height={600}
-                className="w-full h-auto object-cover"
-              />
+            <div className="flex items-center justify-center">
+              <div style={{ width: "500px", height: "250px" }}>
+                <DotLottieReact
+                  src="https://lottie.host/d1ed8f42-32b8-4681-848b-36b57d6cc288/0em0ayL45u.lottie"
+                  loop
+                  autoplay
+                />
+              </div>
             </div>
           </div>
         </div>

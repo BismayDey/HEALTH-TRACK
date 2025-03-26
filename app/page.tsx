@@ -446,6 +446,7 @@ export default function HealthcareLanding() {
               </div>
             </div>
           </section>
+
           <section
             id="ai-assistant"
             className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-[#f0f9ff] to-[#e0f2fe]"
