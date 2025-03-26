@@ -468,141 +468,178 @@ export default function HealthcareLanding() {
               </div>
 
               <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {/* Daily Health Tracking */}
-                <Card className="group overflow-hidden transition-all hover:shadow-md border-none bg-white">
-                  <CardHeader className="p-6">
-                    <div className="w-12 h-12 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-4 group-hover:bg-[#0284c7]/20 transition-colors">
-                      <Activity className="h-6 w-6 text-[#0284c7]" />
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-28 h-28 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-6 group-hover:bg-[#0284c7]/20 transition-colors">
+                      <div className="w-24 h-24">
+                        {" "}
+                        <DotLottieReact
+                          src="https://lottie.host/6cef0fb7-84b7-4d02-861a-c00b3d631392/UNPjZm7wCt.lottie"
+                          loop
+                          autoplay
+                          style={{
+                            width: "120%",
+                            height: "120%",
+                            position: "relative",
+                            left: "-10%",
+                            top: "-10%",
+                          }}
+                        />
+                      </div>
                     </div>
-                    <CardTitle className="text-[#0f172a] group-hover:text-[#0284c7] transition-colors">
+                    <CardTitle className="text-2xl text-[#0f172a] group-hover:text-[#0284c7] transition-colors text-center">
                       Daily Health Tracking
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="px-6 pb-6">
-                    <CardDescription className="text-base text-[#64748b]">
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#64748b] text-center">
                       Monitor vital signs, activity levels, sleep patterns, and
                       nutrition with our AI-powered tracking system. Receive
                       personalized insights and recommendations.
                     </CardDescription>
                   </CardContent>
-                  <div className="px-6 pb-6">
-                    <div className="bg-[#f8fafc] rounded-lg p-4 mb-4">
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-[#64748b]">
-                            Heart Rate
-                          </span>
-                          <span className="text-sm font-medium text-[#0f172a]">
-                            72 bpm
-                          </span>
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-6 mb-6">
+                      <div className="space-y-4">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-base text-[#64748b]">
+                              Heart Rate
+                            </span>
+                            <span className="text-base font-medium text-[#0f172a]">
+                              72 bpm
+                            </span>
+                          </div>
+                          <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
+                            <div
+                              className="bg-[#0284c7] h-2.5 rounded-full"
+                              style={{ width: "65%" }}
+                            ></div>
+                          </div>
                         </div>
-                        <div className="w-full bg-[#e2e8f0] rounded-full h-2">
-                          <div
-                            className="bg-[#0284c7] h-2 rounded-full"
-                            style={{ width: "65%" }}
-                          ></div>
-                        </div>
-                      </div>
-                      <div className="space-y-2 mt-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm text-[#64748b]">
-                            Sleep Quality
-                          </span>
-                          <span className="text-sm font-medium text-[#0f172a]">
-                            Good
-                          </span>
-                        </div>
-                        <div className="w-full bg-[#e2e8f0] rounded-full h-2">
-                          <div
-                            className="bg-[#0284c7] h-2 rounded-full"
-                            style={{ width: "80%" }}
-                          ></div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-base text-[#64748b]">
+                              Sleep Quality
+                            </span>
+                            <span className="text-base font-medium text-[#0f172a]">
+                              Good
+                            </span>
+                          </div>
+                          <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
+                            <div
+                              className="bg-[#0284c7] h-2.5 rounded-full"
+                              style={{ width: "80%" }}
+                            ></div>
+                          </div>
                         </div>
                       </div>
                     </div>
                     <Link
                       href="/dailyhealth"
-                      className="w-full group border border-[#0284c7] text-[#0284c7] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
+                      className="w-full group border-2 border-[#0284c7] text-[#0284c7] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition text-lg"
                     >
                       Try AI Diagnostics
-                      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </Card>
-
                 {/* AI-Powered Diagnostics */}
-                <Card className="group overflow-hidden transition-all hover:shadow-md border-none bg-white">
-                  <CardHeader className="p-6">
-                    <div className="w-12 h-12 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-4 group-hover:bg-[#0284c7]/20 transition-colors">
-                      <Microscope className="h-6 w-6 text-[#0284c7]" />
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-6 group-hover:bg-[#0284c7]/20 transition-colors">
+                      <div className="w-24 h-24">
+                        {" "}
+                        <DotLottieReact
+                          src="https://lottie.host/7107f310-4316-49ee-b018-f9dfcdff8765/UCUCfaeRfM.lottie"
+                          loop
+                          autoplay
+                          style={{
+                            width: "150%",
+                            height: "150%",
+                            position: "relative",
+                            left: "-25%",
+                            top: "-25%",
+                          }}
+                        />
+                      </div>
                     </div>
-                    <CardTitle className="text-[#0f172a] group-hover:text-[#0284c7] transition-colors">
+                    <CardTitle className="text-2xl text-[#0f172a] group-hover:text-[#0284c7] transition-colors text-center">
                       AI-Powered Diagnostics
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="px-6 pb-6">
-                    <CardDescription className="text-base text-[#64748b]">
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#64748b] text-center">
                       Early detection of skin diseases, diabetes risk factors,
                       and heart conditions through our advanced AI diagnostic
                       tools. Upload images or input symptoms for analysis.
                     </CardDescription>
                   </CardContent>
-                  <div className="px-6 pb-6">
-                    <div className="bg-[#f8fafc] rounded-lg p-4 mb-4 flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-[#0f172a]">
-                          Skin Analysis
-                        </span>
-                        <span className="text-xs text-[#64748b]">
-                          98% accuracy rate
-                        </span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-[#0f172a]">
-                          Heart Risk
-                        </span>
-                        <span className="text-xs text-[#64748b]">
-                          95% accuracy rate
-                        </span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-medium text-[#0f172a]">
-                          Diabetes
-                        </span>
-                        <span className="text-xs text-[#64748b]">
-                          93% accuracy rate
-                        </span>
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-6 mb-6">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex flex-col items-center text-center">
+                          <span className="text-base font-bold text-[red]">
+                            Skin Analysis
+                          </span>
+                          <span className="text-sm font-bold text-[#43c543]">
+                            98% accuracy rate
+                          </span>
+                        </div>
+                        <div className="flex flex-col items-center text-center">
+                          <span className="text-base font-semibold text-[red]">
+                            Heart Risk
+                          </span>
+                          <span className="text-sm font-semibold text-[#43c543]">
+                            95% accuracy rate
+                          </span>
+                        </div>
+                        <div className="flex flex-col items-center text-center">
+                          <span className="text-base font-bold text-[red]">
+                            Diabetes
+                          </span>
+                          <span className="text-sm font-semibold text-[#43c543]">
+                            93% accuracy rate
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <Link
                       href="/diagnostics"
-                      className="w-full group border border-[#0284c7] text-[#0284c7] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
+                      className="w-full group border-2 border-[#0284c7] text-[#0284c7] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition text-lg"
                     >
                       Try AI Diagnostics
-                      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </Card>
 
                 {/* Mental Health Support */}
-                <Card className="group overflow-hidden transition-all hover:shadow-md border-none bg-white">
-                  <CardHeader className="p-6">
-                    <div className="w-12 h-12 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-4 group-hover:bg-[#0284c7]/20 transition-colors">
-                      <Brain className="h-6 w-6 text-[#0284c7]" />
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-6 group-hover:bg-[#0284c7]/20 transition-colors">
+                      <div className="w-20 h-20">
+                        <DotLottieReact
+                          src="https://lottie.host/8bd4b3fb-0c50-4bc7-ae4e-b3fa7c49140f/6Z63mollKW.lottie"
+                          loop
+                          autoplay
+                          style={{ width: "100%", height: "100%" }}
+                        />
+                      </div>
                     </div>
-                    <CardTitle className="text-[#0f172a] group-hover:text-[#0284c7] transition-colors">
+                    <CardTitle className="text-2xl text-[#0f172a] group-hover:text-[#0284c7] transition-colors text-center">
                       Mental Health Support
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="px-6 pb-6">
-                    <CardDescription className="text-base text-[#64748b]">
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#64748b] text-center">
                       24/7 AI chat support for mental health concerns, stress
                       management, and emotional well-being. Get personalized
                       coping strategies and resources.
                     </CardDescription>
                   </CardContent>
-                  <div className="px-6 pb-6">
-                    <div className="bg-[#f8fafc] rounded-lg p-4 mb-4">
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-5 mb-6">
                       <div className="flex items-start gap-3 mb-3">
                         <div className="w-8 h-8 rounded-full bg-[#0284c7] flex items-center justify-center shrink-0 text-white text-xs">
                           AI
@@ -616,70 +653,85 @@ export default function HealthcareLanding() {
                         <div className="bg-[#f1f5f9] rounded-lg p-2 text-sm text-[#0f172a]">
                           I've been feeling anxious about work lately.
                         </div>
-                        <div className="w-8 h-8 rounded-full bg-[#e2e8f0] flex items-center justify-center shrink-0 text-[#64748b] text-xs">
+                        <div className="w-8 h-8 rounded-full bg-[black] flex items-center justify-center shrink-0 text-[white] text-xs">
                           You
                         </div>
                       </div>
                     </div>
                     <Link
                       href="/AI"
-                      className="w-full group border border-[#0284c7] text-[#0284c7] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
+                      className="w-full group border-2 border-[#0284c7] text-[#0284c7] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition text-lg"
                     >
                       Chat with AI Support
-                      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </Card>
 
                 {/* Health Dashboard */}
-                <Card className="group overflow-hidden transition-all hover:shadow-md border-none bg-white">
-                  <CardHeader className="p-6">
-                    <div className="w-12 h-12 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-4 group-hover:bg-[#0284c7]/20 transition-colors">
-                      <Clipboard className="h-6 w-6 text-[#0284c7]" />
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-28 h-28 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-6 group-hover:bg-[#0284c7]/20 transition-colors">
+                      <div className="w-24 h-24">
+                        {" "}
+                        <DotLottieReact
+                          src="https://lottie.host/95a7ce8a-45e2-4d37-9ded-0f279695a94d/rzDWWpsZMM.lottie"
+                          loop
+                          autoplay
+                          style={{
+                            width: "130%",
+                            height: "130%",
+                            position: "relative",
+                            left: "-15%",
+                            top: "-15%",
+                            transform: "scale(1.1)",
+                          }}
+                        />
+                      </div>
                     </div>
-                    <CardTitle className="text-[#0f172a] group-hover:text-[#0284c7] transition-colors">
+                    <CardTitle className="text-2xl text-[#0f172a] group-hover:text-[#0284c7] transition-colors text-center">
                       Personalized Health Dashboard
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="px-6 pb-6">
-                    <CardDescription className="text-base text-[#64748b]">
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#64748b] text-center">
                       View all your health data in one place with personalized
                       insights, trends, and recommendations. Track progress and
                       set health goals.
                     </CardDescription>
                   </CardContent>
-                  <div className="px-6 pb-6">
-                    <div className="bg-[#f8fafc] rounded-lg p-4 mb-4">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div className="bg-white p-2 rounded border border-[#e2e8f0]">
-                          <div className="text-xs text-[#64748b]">
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-6 mb-6">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-white p-4 rounded-lg border border-[#e2e8f0] hover:border-[#0284c7]/50 transition-colors">
+                          <div className="text-sm text-[#64748b]">
                             Health Score
                           </div>
-                          <div className="text-lg font-medium text-[#0f172a]">
+                          <div className="text-xl font-medium text-[#0f172a]">
                             85/100
                           </div>
                         </div>
-                        <div className="bg-white p-2 rounded border border-[#e2e8f0]">
-                          <div className="text-xs text-[#64748b]">
+                        <div className="bg-white p-4 rounded-lg border border-[#e2e8f0] hover:border-[#0284c7]/50 transition-colors">
+                          <div className="text-sm text-[#64748b]">
                             Risk Level
                           </div>
-                          <div className="text-lg font-medium text-[#22c55e]">
+                          <div className="text-xl font-medium text-[#22c55e]">
                             Low
                           </div>
                         </div>
-                        <div className="bg-white p-2 rounded border border-[#e2e8f0]">
-                          <div className="text-xs text-[#64748b]">
+                        <div className="bg-white p-4 rounded-lg border border-[#e2e8f0] hover:border-[#0284c7]/50 transition-colors">
+                          <div className="text-sm text-[#64748b]">
                             Appointments
                           </div>
-                          <div className="text-lg font-medium text-[#0f172a]">
+                          <div className="text-xl font-medium text-[#0f172a]">
                             2
                           </div>
                         </div>
-                        <div className="bg-white p-2 rounded border border-[#e2e8f0]">
-                          <div className="text-xs text-[#64748b]">
+                        <div className="bg-white p-4 rounded-lg border border-[#e2e8f0] hover:border-[#0284c7]/50 transition-colors">
+                          <div className="text-sm text-[#64748b]">
                             Medications
                           </div>
-                          <div className="text-lg font-medium text-[#0f172a]">
+                          <div className="text-xl font-medium text-[#0f172a]">
                             3
                           </div>
                         </div>
@@ -687,67 +739,60 @@ export default function HealthcareLanding() {
                     </div>
                     <Link
                       href="/healthdash"
-                      className="w-full group border border-[#0284c7] text-[#0284c7] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
+                      className="w-full group border-2 border-[#0284c7] text-[#0284c7] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition text-lg"
                     >
                       View Your Dashboard
-                      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </Card>
-
                 {/* Emergency Assistance */}
-                <Card className="group overflow-hidden transition-all hover:shadow-md border-none bg-white">
-                  <CardHeader className="p-6">
-                    <div className="w-12 h-12 rounded-full bg-[#ef4444]/10 flex items-center justify-center mb-4 group-hover:bg-[#ef4444]/20 transition-colors">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="h-6 w-6 text-[#ef4444]"
-                      >
-                        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
-                      </svg>
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-[#ef4444]/10 flex items-center justify-center mb-6 group-hover:bg-[#ef4444]/20 transition-colors">
+                      <div className="w-20 h-20">
+                        <DotLottieReact
+                          src="https://lottie.host/73bf3a96-2724-40be-96fc-3a79200bc6af/Jr5WIb1X4b.lottie"
+                          loop
+                          autoplay
+                          style={{ width: "100%", height: "100%" }}
+                        />
+                      </div>
                     </div>
-                    <CardTitle className="text-[#0f172a] group-hover:text-[#ef4444] transition-colors">
+                    <CardTitle className="text-2xl text-[#0f172a] group-hover:text-[#ef4444] transition-colors text-center">
                       Emergency Assistance
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="px-6 pb-6">
-                    <CardDescription className="text-base text-[#64748b]">
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#64748b] text-center">
                       Quick access to emergency services, real-time guidance for
                       first aid, and community support during emergencies.
                       One-tap emergency contact.
                     </CardDescription>
                   </CardContent>
-                  <div className="px-6 pb-6">
-                    <div className="bg-[#f8fafc] rounded-lg p-4 mb-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-[#0f172a]">
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-6 mb-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-base font-medium text-[#0f172a]">
                           Emergency Features
                         </span>
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#22c55e]" />
-                          <span className="text-sm text-[#64748b]">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+                          <span className="text-base text-[#64748b]">
                             One-tap emergency call
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#22c55e]" />
-                          <span className="text-sm text-[#64748b]">
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+                          <span className="text-base text-[#64748b]">
                             GPS location sharing
                           </span>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-[#22c55e]" />
-                          <span className="text-sm text-[#64748b]">
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+                          <span className="text-base text-[#64748b]">
                             First aid instructions
                           </span>
                         </div>
@@ -755,35 +800,42 @@ export default function HealthcareLanding() {
                     </div>
                     <Link
                       href="/emergency"
-                      className="w-full group border border-[#ef4444] text-[#ef4444] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#ef4444] hover:text-white transition"
+                      className="w-full group border-2 border-[#ef4444] text-[#ef4444] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#ef4444] hover:text-white transition text-lg"
                     >
                       Emergency Services
-                      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </Card>
 
                 {/* Health Recommendations */}
-                <Card className="group overflow-hidden transition-all hover:shadow-md border-none bg-white">
-                  <CardHeader className="p-6">
-                    <div className="w-12 h-12 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-4 group-hover:bg-[#0284c7]/20 transition-colors">
-                      <Pill className="h-6 w-6 text-[#0284c7]" />
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-6 group-hover:bg-[#0284c7]/20 transition-colors">
+                      <div className="w-20 h-20">
+                        <DotLottieReact
+                          src="https://lottie.host/324115cc-3e6a-4364-a826-207873327a20/FRG5sdnNdg.lottie"
+                          loop
+                          autoplay
+                          style={{ width: "100%", height: "100%" }}
+                        />
+                      </div>
                     </div>
-                    <CardTitle className="text-[#0f172a] group-hover:text-[#0284c7] transition-colors">
+                    <CardTitle className="text-2xl text-[#0f172a] group-hover:text-[#0284c7] transition-colors text-center">
                       Tailored Health Recommendations
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="px-6 pb-6">
-                    <CardDescription className="text-base text-[#64748b]">
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#64748b] text-center">
                       Receive personalized health recommendations based on your
                       profile, health history, and current conditions. Get
                       nutrition, exercise, and lifestyle advice.
                     </CardDescription>
                   </CardContent>
-                  <div className="px-6 pb-6">
-                    <div className="bg-[#f8fafc] rounded-lg p-4 mb-4">
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-4 mb-6">
                       <div className="space-y-3">
-                        <div className="bg-white p-2 rounded border border-[#e2e8f0]">
+                        <div className="bg-white p-3 rounded-md border border-[#e2e8f0] hover:border-[#0284c7]/50 transition-colors">
                           <div className="text-xs text-[#64748b]">
                             Nutrition
                           </div>
@@ -791,26 +843,20 @@ export default function HealthcareLanding() {
                             Increase omega-3 intake for heart health
                           </div>
                         </div>
-                        <div className="bg-white p-2 rounded border border-[#e2e8f0]">
+                        <div className="bg-white p-3 rounded-md border border-[#e2e8f0] hover:border-[#0284c7]/50 transition-colors">
                           <div className="text-xs text-[#64748b]">Exercise</div>
                           <div className="text-sm text-[#0f172a]">
                             30 min moderate cardio, 3x weekly
-                          </div>
-                        </div>
-                        <div className="bg-white p-2 rounded border border-[#e2e8f0]">
-                          <div className="text-xs text-[#64748b]">Sleep</div>
-                          <div className="text-sm text-[#0f172a]">
-                            Aim for 7-8 hours of quality sleep
                           </div>
                         </div>
                       </div>
                     </div>
                     <Link
                       href="/healthrecom"
-                      className="w-full group border border-[#0284c7] text-[#0284c7] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
+                      className="w-full group border-2 border-[#0284c7] text-[#0284c7] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition text-lg"
                     >
                       Get Recommendations
-                      <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
                 </Card>

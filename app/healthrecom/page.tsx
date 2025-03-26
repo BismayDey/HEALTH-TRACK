@@ -328,7 +328,7 @@ export default function HealthRecommendationsPage() {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
       <Link
         href="/"
-        className="w-full group border border-[#0284c7] text-[#0284c7] px-4 py-2 rounded-md flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
+        className="w-full h-[40px] group border border-[#0284c7] text-[#0284c7] px-4 py-2 flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
       >
         Go to Home
         <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />

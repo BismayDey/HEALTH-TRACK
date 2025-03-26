@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-
+import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,6 +32,7 @@ import {
   Shield,
   Users,
   ChevronDown,
+  ChevronRight,
   ChevronUp,
   Sparkles,
 } from "lucide-react";
@@ -69,6 +70,13 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+      <Link
+        href="/"
+        className="w-full h-[40px] group border border-[#0284c7] text-[#0284c7] px-4 py-2 flex items-center justify-center hover:bg-[#0284c7] hover:text-white transition"
+      >
+        Go to Home
+        <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+      </Link>
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-20 pb-16 md:pt-32 md:pb-24">
         <div className="absolute inset-0 bg-grid-slate-200 [mask-image:linear-gradient(0deg,rgba(255,255,255,0.5),rgba(255,255,255,1))] -z-10"></div>
@@ -117,12 +125,23 @@ export default function Home() {
 
           <div className="relative mx-auto max-w-5xl mt-10">
             <div className="absolute inset-0 bg-gradient-to-r from-primary/30 to-secondary/30 rounded-2xl blur-xl -z-10 transform -rotate-1"></div>
-            <div className="flex items-center justify-center">
-              <div style={{ width: "500px", height: "250px" }}>
+            <div className="flex items-center justify-center p-4">
+              {" "}
+              {/* Added padding */}
+              <div style={{ width: "550px", height: "300px" }}>
+                {" "}
                 <DotLottieReact
-                  src="https://lottie.host/95a7ce8a-45e2-4d37-9ded-0f279695a94d/rzDWWpsZMM.lottie"
+                  src="https://lottie.host/d4502395-7ed5-42b4-a6f3-2c1292e720cc/i6ky52xnXy.lottie"
                   loop
                   autoplay
+                  style={{
+                    width: "120%",
+                    height: "120%",
+                    position: "relative",
+                    left: "-10%",
+                    top: "-10%",
+                    transform: "scale(1.3)",
+                  }}
                 />
               </div>
             </div>
