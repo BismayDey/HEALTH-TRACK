@@ -96,3 +96,60 @@ html {
     @apply bg-background text-foreground;
   }
 }
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: #f8f9fa; /* Fallback color */
+  z-index: 0;
+}
+
+/* Fix for marker touch events */
+.leaflet-marker-icon {
+  pointer-events: auto !important;
+}
+
+/* Custom markers */
+.custom-marker {
+  position: relative;
+  text-align: center;
+}
+
+.marker-pin {
+  width: 30px;
+  height: 30px;
+  background: #0284c7;
+  border-radius: 50% 50% 50% 0;
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 0;
+  top: 0;
+  margin: -15px 0 0 -15px;
+}
+
+.custom-marker.user .marker-pin {
+  background: #10b981;
+}
+
+.marker-text {
+  transform: rotate(45deg);
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  padding: 13px 0 0 5px;
+}
+
+/* Popup styling */
+.map-popup {
+  font-family: sans-serif;
+  padding: 5px;
+  line-height: 1.4;
+}
+
+/* Fix for fullscreen mode */
+.fixed {
+  position: fixed;
+}

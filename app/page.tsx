@@ -11,6 +11,7 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
+import OpenStreetMap from "@/components/InteractiveMap";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -1090,18 +1091,8 @@ export default function HealthcareLanding() {
                     </Card>
                   ))}
                 </div>
-                <div className="relative h-[400px] rounded-xl overflow-hidden shadow-md">
-                  <Image
-                    src="/map.png"
-                    alt="Map of our locations"
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
-                    <Button className="bg-[#0284c7] hover:bg-[#0369a1] text-white">
-                      Find Nearest Location
-                    </Button>
-                  </div>
+                <div className="container mx-auto px-4 py-8">
+                  <h1 className="text-3xl font-bold mb-6">Our Location</h1>
                 </div>
               </div>
             </div>
