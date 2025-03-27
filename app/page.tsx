@@ -893,6 +893,53 @@ export default function HealthcareLanding() {
                   </div>
                 </Card>
               </div>
+              <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden">
+                <div className="md:flex">
+                  <div className="md:shrink-0">
+                    <Image
+                      src="/placeholder.svg?height=300&width=300"
+                      width={300}
+                      height={300}
+                      alt="AI Entertainment Recommender"
+                      className="h-48 w-full object-cover md:h-full md:w-48"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <div className="uppercase tracking-wide text-sm text-[#0284c7] font-semibold">
+                      AI-Powered Entertainment
+                    </div>
+                    <h3 className="mt-1 text-xl font-semibold text-[#0f172a]">
+                      Smart Movie & Music Recommendations Based on Your Mood
+                    </h3>
+                    <p className="mt-2 text-[#64748b]">
+                      Our AI-driven recommendation system suggests the best
+                      movies and songs tailored to your emotions. Whether you're
+                      happy, sad, or in need of motivation, our AI analyses your
+                      mood and curates the perfect entertainment experience for
+                      you.
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
+                        Mood-Based Recommendations
+                      </Badge>
+                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
+                        AI-Powered Curation
+                      </Badge>
+                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
+                        Personalized Experience
+                      </Badge>
+                    </div>
+                    <div className="mt-6">
+                      <Link
+                        href="/msrecom"
+                        className="inline-block px-4 py-2 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-md transition-colors"
+                      >
+                        Get Your AI Recommendations
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden">
                 <div className="md:flex">
