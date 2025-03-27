@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-// Dynamically import the map component with no SSR
 const Map = dynamic(() => import("./InteractiveMap"), {
   ssr: false,
   loading: () => (

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Type definitions for Leaflet layers
 type LayerType = L.Marker | L.Polyline | L.Polygon | L.Circle | L.Rectangle;
 
 const InteractiveMap = () => {
@@ -13,10 +12,8 @@ const InteractiveMap = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Kolkata location coordinates
   const KOLKATA_LOCATION: L.LatLngExpression = [22.4829, 88.3948];
 
-  // Custom icon creator with TypeScript types
   const createIcon = (color: string = "blue"): L.DivIcon => {
     return L.divIcon({
       className: `custom-marker marker-${color}`,
@@ -37,11 +34,9 @@ const InteractiveMap = () => {
   }, []);
 
   useEffect(() => {
-    // Only run on client side after mount
     if (!isMounted || typeof window === "undefined") return;
     if (!containerRef.current || mapRef.current) return;
 
-    // Initialize map
     mapRef.current = L.map(containerRef.current, {
       zoomControl: true,
       dragging: true,
@@ -55,7 +50,6 @@ const InteractiveMap = () => {
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(mapRef.current);
 
-    // Add Kolkata marker
     L.marker(KOLKATA_LOCATION, {
       icon: createIcon("red"),
     })
@@ -75,7 +69,6 @@ const InteractiveMap = () => {
   const handleFindNearestLocation = () => {
     if (!mapRef.current) return;
 
-    // Enter fullscreen first
     setIsFullscreen(true);
 
     if (navigator.geolocation) {
@@ -84,17 +77,14 @@ const InteractiveMap = () => {
           const { latitude, longitude } = position.coords;
           const userLocation: L.LatLngExpression = [latitude, longitude];
 
-          // Clear existing markers and lines (with proper typing)
           mapRef.current?.eachLayer((layer: LayerType) => {
             if (layer instanceof L.Marker || layer instanceof L.Polyline) {
               mapRef.current?.removeLayer(layer);
             }
           });
 
-          // Center map on user's location with smooth animation
           mapRef.current?.flyTo(userLocation, 13);
 
-          // Add user location marker
           L.marker(userLocation, {
             icon: createIcon("blue"),
           })
@@ -102,7 +92,6 @@ const InteractiveMap = () => {
             .bindPopup("Your Location")
             .openPopup();
 
-          // Add Kolkata marker
           L.marker(KOLKATA_LOCATION, {
             icon: createIcon("red"),
           }).addTo(mapRef.current).bindPopup(`
@@ -113,7 +102,6 @@ const InteractiveMap = () => {
             </div>
           `);
 
-          // Add line between locations
           L.polyline([userLocation, KOLKATA_LOCATION], {
             color: "#0284c7",
             weight: 3,

@@ -99,16 +99,14 @@ html {
 .leaflet-container {
   height: 100%;
   width: 100%;
-  background: #f8f9fa; /* Fallback color */
+  background: #f8f9fa;
   z-index: 0;
 }
 
-/* Fix for marker touch events */
 .leaflet-marker-icon {
   pointer-events: auto !important;
 }
 
-/* Custom markers */
 .custom-marker {
   position: relative;
   text-align: center;
@@ -142,14 +140,12 @@ html {
   padding: 13px 0 0 5px;
 }
 
-/* Popup styling */
 .map-popup {
   font-family: sans-serif;
   padding: 5px;
   line-height: 1.4;
 }
 
-/* Fix for fullscreen mode */
 .fixed {
   position: fixed;
 }
