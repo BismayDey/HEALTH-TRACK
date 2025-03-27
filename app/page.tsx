@@ -53,6 +53,7 @@ import {
   Settings,
   ScrollText,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { useState, useEffect, useCallback } from "react";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
@@ -94,10 +95,34 @@ export default function HealthcareLanding() {
         <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
           <div className="container flex h-16 items-center justify-between">
             <div className="flex items-center gap-2">
-              <HeartPulse className="h-6 w-6 text-[#0284c7]" />
-              <span className="text-xl font-bold text-[#0f172a]">
+              <div className="h-10 w-10">
+                {" "}
+                <DotLottieReact
+                  src="https://lottie.host/97565632-549b-44ea-8f86-6084fc5d1840/kiRoMpiDxH.lottie"
+                  loop
+                  autoplay
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </div>
+              <motion.span
+                className="text-xl font-bold bg-clip-text"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, #0f172a, #0284c7, #0ea5e9, #0284c7, #0f172a)",
+                  backgroundSize: "300% 100%",
+                  color: "transparent",
+                }}
+                animate={{
+                  backgroundPosition: ["0%", "100%"],
+                }}
+                transition={{
+                  duration: 6,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+              >
                 Health Track
-              </span>
+              </motion.span>
             </div>
             <nav className="hidden md:flex gap-8">
               <Link
@@ -384,36 +409,42 @@ export default function HealthcareLanding() {
                     title: "Primary Care",
                     description:
                       "Comprehensive healthcare services for patients of all ages, focusing on your overall health and wellness.",
+                    link: "/primary",
                   },
                   {
                     icon: <Users className="h-10 w-10 text-[#0284c7]" />,
                     title: "Family Medicine",
                     description:
                       "Care for the entire family, from newborns to seniors, building lasting relationships with our patients.",
+                    link: "/family",
                   },
                   {
                     icon: <Calendar className="h-10 w-10 text-[#0284c7]" />,
                     title: "Preventive Care",
                     description:
                       "Regular check-ups and screenings to maintain your health and catch potential issues early.",
+                    link: "/preventive-care",
                   },
                   {
                     icon: <Brain className="h-10 w-10 text-[#0284c7]" />,
                     title: "Neurology",
                     description:
                       "Specialized care for conditions affecting the brain, spine, and nervous system.",
+                    link: "/neurology",
                   },
                   {
                     icon: <Activity className="h-10 w-10 text-[#0284c7]" />,
                     title: "Cardiology",
                     description:
                       "Expert care for heart conditions with the latest diagnostic and treatment technologies.",
+                    link: "/cardiology",
                   },
                   {
                     icon: <Pill className="h-10 w-10 text-[#0284c7]" />,
                     title: "Pharmacy",
                     description:
                       "On-site pharmacy services for convenient access to your prescribed medications.",
+                    link: "/pharmacy",
                   },
                 ].map((service, index) => (
                   <Card
@@ -434,13 +465,13 @@ export default function HealthcareLanding() {
                       </CardDescription>
                     </CardContent>
                     <CardFooter className="px-6 pb-6 pt-0">
-                      <Button
-                        variant="link"
-                        className="p-0 h-auto font-semibold text-[#0284c7] group-hover:text-[#0369a1] transition-colors"
+                      <Link
+                        href={service.link}
+                        className="p-0 h-auto font-semibold text-[#0284c7] group-hover:text-[#0369a1] transition-colors flex items-center"
                       >
                         Learn more
                         <ChevronRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </Button>
+                      </Link>
                     </CardFooter>
                   </Card>
                 ))}
