@@ -861,14 +861,13 @@ export default function HealthcareLanding() {
                   </div>
                 </Card>
               </div>
-              <div className='mt-16 bg-white rounded-xl shadow-md overflow-hidden'>
-                <div className='md:flex'>
-                  <div className='md:shrink-0'>
-                    <Image
-                      src='/placeholder.svg?height=300&width=300'
-                      width={300}
-                      height={300}
-                      alt='AI Entertainment Recommender'
+              <div className='mt-16 bg-white rounded-xl shadow-md overflow-hidden '>
+                <div className='md:flex '>
+                  <div className='md:shrink-0 bg-[#0284c7]/20 border-r-2 border-black'>
+                    <DotLottieReact
+                      src='https://lottie.host/2ca4d15b-c15a-499b-a311-571163beee91/ny2dTgfWMt.lottie'
+                      loop
+                      autoplay
                       className='h-48 w-full object-cover md:h-full md:w-48'
                     />
                   </div>
@@ -910,12 +909,11 @@ export default function HealthcareLanding() {
 
               <div className='mt-16 bg-white rounded-xl shadow-md overflow-hidden'>
                 <div className='md:flex'>
-                  <div className='md:shrink-0'>
-                    <Image
-                      src='/placeholder.svg?height=300&width=300'
-                      width={300}
-                      height={300}
-                      alt='AI Health Assistant'
+                  <div className='md:shrink-0 border-r-2 border-black bg-[#0284c7]/20'>
+                    <DotLottieReact
+                      src='https://lottie.host/1f71738d-8adc-4255-acfe-f626d62343ae/8xcwvNMhRi.lottie'
+                      loop
+                      autoplay
                       className='h-48 w-full object-cover md:h-full md:w-48'
                     />
                   </div>
