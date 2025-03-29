@@ -809,7 +809,6 @@ export default function HealthcareLanding() {
                   </div>
                 </Card>
 
-                {/* Health Recommendations */}
                 <Card className='group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300'>
                   <CardHeader className='p-8 flex flex-col items-center'>
                     <div className='w-24 h-24 rounded-full bg-[#0284c7]/10 flex items-center justify-center mb-6 group-hover:bg-[#0284c7]/20 transition-colors'>
