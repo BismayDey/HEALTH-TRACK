@@ -4,14 +4,18 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import {
   Bot,
   Brain,
+  CircleAlert,
   ClipboardCheck,
   ClipboardPlus,
   Clock,
+  Cross,
   Divide,
   Microscope,
   PlusCircle,
   Send,
+  X,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function AiHealth() {
@@ -63,10 +67,15 @@ export default function AiHealth() {
             Your 24/7 Health Companion
           </div>
         </div>
+        <Link
+          href='/'
+          className='ml-auto rounded-3xl hover:bg-gray-100 p-3 cursor-pointer'>
+          <X size={30} />
+        </Link>
       </nav>
 
       <div className='flex flex-row items-center justify-center bg-blue-50'>
-        <div className='max-w-[1000px] w-[90%] max-h-[600px] h-[90%] bg-white shadow-lg rounded-3xl flex flex-col overflow-hidden'>
+        <div className='ml-3 max-w-[1000px] w-[90%] max-h-[600px] h-[90%] bg-white shadow-lg rounded-3xl flex flex-col overflow-hidden'>
           <div className='bg-blue-400 py-3 items-center flex flex-row px-10 gap-5'>
             <div className='bg-blue-300 p-2 rounded-2xl'>
               <Bot size={30} color='white' />
@@ -146,7 +155,7 @@ export default function AiHealth() {
             </div>
           </form>
         </div>
-        <div className='max-w-[400px] w-full max-h-[600px] h-[90%] flex flex-col'>
+        <div className='lg:max-w-[400px] max-w-[350px] w-full max-h-[600px] h-[90%] md:flex hidden sm flex-col'>
           <div className='m-3 rounded-2xl bg-white shadow-xl p-4 flex flex-col gap-3'>
             <div className='flex flex-row items-center text-[25px] gap-2'>
               <Clock color='blue' />
@@ -156,35 +165,52 @@ export default function AiHealth() {
               {
                 icon: <ClipboardPlus color='blue' />,
                 text: 'Book an Appointment',
+                link: '/',
               },
               {
                 icon: <Microscope color='blue' />,
                 text: 'AI-Powered Diagnostics',
+                link: '/diagnostics',
               },
-              { icon: <Bot color='blue' />, text: 'Mental Health Support' },
+              {
+                icon: <Bot color='blue' />,
+                text: 'Mental Health Support',
+                link: '/AI',
+              },
+
               {
                 icon: <ClipboardCheck color='blue' />,
                 text: 'Daily Health Tracking',
+                link: '/dailyhealth',
               },
             ].map((service, index) => (
-              <div
+              <Link
+                href={service.link}
                 key={index}
                 className='bg-blue-50 rounded-xl gap-4 p-3 flex flex-row items-center text-[18px] 
                    hover:bg-blue-100 hover:shadow-lg transition-all duration-200 cursor-pointer 
                    border border-gray-100 hover:border-blue-400'>
                 {service.icon}
                 {service.text}
-              </div>
+              </Link>
             ))}
           </div>
-          <div className='mx-3 rounded-2xl bg-red-400 hover:bg-red-500 shadow-xl p-4 flex flex-row transition-all duration-200 cursor-pointer border border-blue-200 hover:border-red-600 text-[18px] gap-4 text-white'>
+          <Link
+            href='/emergency'
+            className='mx-3 rounded-2xl bg-red-400 hover:bg-red-500 shadow-xl p-4 flex flex-row transition-all duration-200 cursor-pointer border border-blue-200 hover:border-red-600 text-[18px] gap-4 text-white'>
             <PlusCircle color='white' />
             <div className='flex flex-col'>
               <div className='font-bold'>Emergency Assistance</div>
               <div>Quick access to emergency services</div>
             </div>
+          </Link>
+          <div className='bg-teal-400 p-4 m-3 rounded-2xl flex flex-row text-[18px] gap-4'>
+            <CircleAlert color='white' />
+            <div className='text-white'>
+              Information and guidance <br /> may not always be accurate <br />{' '}
+              or personalized.
+            </div>
           </div>
-          <div className='bg-teal-400 h-full m-3 rounded-2xl'></div>
         </div>
       </div>
     </div>
