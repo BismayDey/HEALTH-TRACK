@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Player } from "@lottiefiles/react-lottie-player";
 import {
   ArrowLeft,
   Calendar,
@@ -1455,14 +1454,6 @@ export default function MealPlanner() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-24 h-24 mx-auto mb-4">
-            <Player
-              autoplay
-              loop
-              src="https://lottie.host/7f94b3f0-9490-4f63-9975-dcfd1d6e9c9c/sQUcbxzSYa.json"
-              style={{ height: "100%", width: "100%" }}
-            />
-          </div>
           <h2 className="text-xl font-semibold text-gray-700 mb-2">
             Loading your meal planner
           </h2>
@@ -3242,14 +3233,7 @@ export default function MealPlanner() {
               <h3 className="text-sm font-medium">Your Reminders</h3>
               {reminders.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <div className="w-16 h-16 mb-2">
-                    <Player
-                      autoplay
-                      loop
-                      src="https://lottie.host/38e9deaa-9113-4e99-b4f9-3b3ceeeeaa5c/gBVZ9Z4vUB.json"
-                      style={{ height: "100%", width: "100%" }}
-                    />
-                  </div>
+                  <div className="w-16 h-16 mb-2"></div>
                   <p className="text-sm text-muted-foreground">
                     You don't have any reminders yet
                   </p>
@@ -3483,25 +3467,7 @@ export default function MealPlanner() {
               Preview your custom Lottie animation
             </DialogDescription>
           </DialogHeader>
-          <div className="flex flex-col items-center justify-center py-4">
-            {customLottieUrl ? (
-              <div className="w-64 h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                <Player
-                  autoplay
-                  loop
-                  src={customLottieUrl}
-                  style={{ height: "100%", width: "100%" }}
-                />
-              </div>
-            ) : (
-              <div className="text-center p-8 bg-gray-50 rounded-lg w-full">
-                <Upload className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">
-                  Enter a valid Lottie animation URL to preview
-                </p>
-              </div>
-            )}
-          </div>
+
           <DialogFooter>
             <Button
               variant="outline"
@@ -3541,14 +3507,8 @@ export default function MealPlanner() {
           </DialogHeader>
           <div className="py-4">
             <div className="flex items-center justify-center mb-4">
-              <div className="w-24 h-24">
-                <Player
-                  autoplay
-                  loop
-                  src="https://lottie.host/7e5d2e8c-4e4f-4c62-8b2c-9c3f51f927c1/Hl5fGrEJAi.json"
-                  style={{ height: "100%", width: "100%" }}
-                />
-              </div>
+              <Bell className="h-16 w-16 text-blue-500" />{" "}
+              {/* Replaced with a simple bell icon */}
             </div>
             <p className="text-sm text-center text-muted-foreground">
               You'll receive timely notifications for your meal reminders,
