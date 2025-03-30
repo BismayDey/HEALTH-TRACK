@@ -86,7 +86,7 @@ export default function AiHealth() {
                 AI Health Assistant
               </div>
               <div className="flex flex-row items-center gap-2 flex-nowrap">
-                <span className="flex h-2.5 w-2.5 rounded-full bg-green-600 animate-pulse border-1 border-black"></span>
+                <span className="flex h-2.5 w-2.5 rounded-full bg-green-600 animate-pulse border-1 border-green-800"></span>
                 <div className="flex flex-row text-white items-center flex-nowrap">
                   Online
                   <div className="mx-2 h-1 w-1 bg-white rounded-sm text-nowrap"></div>
