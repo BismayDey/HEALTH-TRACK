@@ -503,8 +503,14 @@ function SkinAnalysis() {
   const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<{
+    predicted_class: string;
+    confidence: number;
+  } | null>(null);
+  const [responseTime, setResponseTime] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -536,19 +542,25 @@ function SkinAnalysis() {
       return;
     }
 
+    setSelectedFile(file);
     const reader = new FileReader();
     reader.onload = (e) => {
       setImage(e.target?.result as string);
       setResult(null);
+      setError(null);
     };
     reader.readAsDataURL(file);
   };
 
   const handleAnalyze = async () => {
-    if (!image) return;
+    if (!selectedFile) {
+      setError("Please upload an image first.");
+      return;
+    }
 
     setIsAnalyzing(true);
     setProgress(0);
+    setError(null);
 
     // Simulate progress
     const interval = setInterval(() => {
@@ -561,33 +573,32 @@ function SkinAnalysis() {
       });
     }, 100);
 
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    const startTime = Date.now();
+
     try {
-      // Convert base64 image to blob
-      const response = await fetch(image);
-      const blob = await response.blob();
-
-      // Create form data
-      const formData = new FormData();
-      formData.append("file", blob, "image.jpg");
-
-      // Send to API
-      const apiResponse = await fetch(
-        "https://health-api-12zd.onrender.com/image/predict/skin_disease",
+      const response = await fetch(
+        "https://api-skin-disease-identifier.onrender.com/predict",
         {
           method: "POST",
           body: formData,
         }
       );
 
-      if (!apiResponse.ok) {
+      if (!response.ok) {
         throw new Error("API request failed");
       }
 
-      const data = await apiResponse.json();
-      setResult(data.result || data.error);
+      const data = await response.json();
+      setResult(data);
+
+      const endTime = Date.now();
+      setResponseTime((endTime - startTime) / 1000);
     } catch (error) {
       console.error("Error analyzing image:", error);
-      setResult("Error fetching data. Please try again.");
+      setError("Error fetching results. Please try again.");
     } finally {
       clearInterval(interval);
       setProgress(100);
@@ -597,7 +608,10 @@ function SkinAnalysis() {
 
   const resetAnalysis = () => {
     setImage(null);
+    setSelectedFile(null);
     setResult(null);
+    setError(null);
+    setResponseTime(null);
     setProgress(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -632,6 +646,7 @@ function SkinAnalysis() {
               className="hidden"
               accept="image/*"
               onChange={handleFileChange}
+              id="file-upload"
             />
             <div className="animate-bounce mb-4">
               <Upload className="h-12 w-12 mx-auto text-emerald-400" />
@@ -648,11 +663,11 @@ function SkinAnalysis() {
           <div className="space-y-4">
             <div className="relative group">
               <div className="aspect-video relative rounded-lg overflow-hidden border border-slate-200 transition-transform group-hover:scale-[1.01] duration-300">
-                <Image
-                  src={image || "/placeholder.svg"}
+                <img
+                  src={image}
                   alt="Uploaded skin image"
-                  fill
-                  className="object-cover"
+                  className="object-cover w-full h-full"
+                  id="preview"
                 />
               </div>
               <Button
@@ -669,6 +684,7 @@ function SkinAnalysis() {
               <Button
                 className="w-full bg-emerald-600 hover:bg-emerald-700 transition-all duration-300 hover:shadow-lg"
                 onClick={handleAnalyze}
+                id="submit-btn"
               >
                 <Microscope className="mr-2 h-4 w-4" /> Analyze Image
               </Button>
@@ -687,6 +703,12 @@ function SkinAnalysis() {
               </div>
             )}
 
+            {error && (
+              <div className="p-4 bg-red-50 text-red-600 rounded-lg">
+                {error}
+              </div>
+            )}
+
             {result && (
               <Card className="p-4 border-0 shadow-md overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-100 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl opacity-70 -z-10"></div>
@@ -696,7 +718,15 @@ function SkinAnalysis() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-lg">Analysis Result</h3>
-                    <p className="text-slate-600">{result}</p>
+                    <p className="text-slate-600">
+                      Predicted: {result.predicted_class} (
+                      {result.confidence.toFixed(2)}% confidence)
+                    </p>
+                    {responseTime && (
+                      <p className="text-sm text-slate-500 mt-2">
+                        Response time: {responseTime} seconds
+                      </p>
+                    )}
                   </div>
                 </div>
               </Card>
@@ -707,7 +737,6 @@ function SkinAnalysis() {
     </div>
   );
 }
-
 // Heart Risk Analysis Component
 function HeartRiskAnalysis() {
   const [formData, setFormData] = useState({
