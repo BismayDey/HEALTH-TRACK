@@ -165,7 +165,7 @@ export default function Home() {
             <StatCard
               icon={<Microscope className="h-8 w-8 text-emerald-500" />}
               title="Skin Analysis"
-              value={statsVisible ? 98 : 0}
+              value={statsVisible ? 87 : 0}
               suffix="%"
               description="accuracy rate"
               color="emerald"
@@ -173,7 +173,7 @@ export default function Home() {
             <StatCard
               icon={<Heart className="h-8 w-8 text-rose-500" />}
               title="Heart Risk"
-              value={statsVisible ? 95 : 0}
+              value={statsVisible ? 80 : 0}
               suffix="%"
               description="accuracy rate"
               color="rose"
@@ -181,7 +181,7 @@ export default function Home() {
             <StatCard
               icon={<Flask className="h-8 w-8 text-amber-500" />}
               title="Diabetes"
-              value={statsVisible ? 93 : 0}
+              value={statsVisible ? 80 : 0}
               suffix="%"
               description="accuracy rate"
               color="amber"
