@@ -28,6 +28,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Location from "@/components/Location";
 import { Badge } from "@/components/ui/badge";
 import {
   HeartPulse,
@@ -1057,21 +1058,21 @@ export default function HealthcareLanding() {
               <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
                 {[
                   {
-                    name: "Dr. Paggu",
+                    name: "DR. Nancy Maguire",
                     specialty: "Family Medicine",
-                    image: "/paggu.jpg",
-                    education: "R.G. Kar Medical College and Hospital",
-                  },
-                  {
-                    name: "Dr. Adi",
-                    specialty: "Cardiology",
-                    image: "/adi.jpg",
+                    image: "/doc2.jpg",
                     education: "Johns Hopkins University",
                   },
                   {
-                    name: "Dr. Hansraj Hathi",
+                    name: "Dr. Debanjan Das",
+                    specialty: "Cardiology",
+                    image: "/doc3.jpg",
+                    education: "Johns Hopkins University",
+                  },
+                  {
+                    name: "Dr. Alex Smith",
                     specialty: "Pediatrics",
-                    image: "/hati.jpg",
+                    image: "/doc1.jpg",
                     education: "Stanford University",
                   },
                 ].map((doctor, index) => (
@@ -1218,6 +1219,7 @@ export default function HealthcareLanding() {
                 </div>
                 <div className="container mx-auto px-4 py-8">
                   <h1 className="text-3xl font-bold mb-6">Our Location</h1>
+                  <Location />
                 </div>
               </div>
             </div>

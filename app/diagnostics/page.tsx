@@ -148,7 +148,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Stats Section */}
       <section ref={statsRef} className="py-16 bg-white">
         <div className="container px-4 md:px-6">
@@ -198,7 +197,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Diagnostics Hub Section */}
       <section id="diagnostics" className="py-16 bg-slate-50">
         <div className="container px-4 md:px-6">
@@ -259,7 +257,6 @@ export default function Home() {
           </Card>
         </div>
       </section>
-
       {/* How It Works Section */}
       <section className="py-16 bg-white">
         <div className="container px-4 md:px-6">
@@ -295,8 +292,49 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* Precaution Section */}
+      <section className="py-8 bg-red-50 border-l-4 border-red-600 rounded-lg my-12">
+        <div className="container px-4 md:px-6 mx-auto">
+          <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
+            {/* Warning icon with circle background */}
+            <div className="mb-4 p-3 bg-red-100 rounded-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8 text-red-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+            </div>
 
-      {/* Testimonials Section */}
+            {/* Warning text */}
+            <div className="text-red-800">
+              <h3 className="font-bold text-xl mb-3">
+                Important Medical Notice
+              </h3>
+              <p className="text-base leading-relaxed">
+                This AI-powered skin disease detection tool is designed to
+                assist with preliminary assessments only.
+                <span className="block mt-2 font-medium">
+                  It is not a substitute for professional medical advice.
+                </span>
+              </p>
+              <p className="mt-4 text-sm md:text-base">
+                Always consult a qualified healthcare provider for accurate
+                diagnosis and appropriate treatment.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/*
       <section className="py-16 bg-slate-50">
         <div className="container px-4 md:px-6">
           <div className="text-center mb-12">
@@ -330,7 +368,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-
+*/}
       {/* FAQ Section */}
       <section className="py-16 bg-white">
         <div className="container px-4 md:px-6">
@@ -371,7 +409,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-primary/20 to-secondary/20">
         <div className="container px-4 md:px-6">
@@ -397,7 +434,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-200 py-12">
         <div className="container px-4 md:px-6">
