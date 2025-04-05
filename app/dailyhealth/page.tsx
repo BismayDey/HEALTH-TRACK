@@ -206,18 +206,6 @@ export default function HealthDashboard() {
         </div>
 
         <div className='flex gap-2'>
-          <Button variant='outline' size='icon' className='h-9 w-9'>
-            <Bell className='h-4 w-4' />
-            <span className='sr-only'>Notifications</span>
-          </Button>
-          <Button variant='outline' size='icon' className='h-9 w-9'>
-            <Settings className='h-4 w-4' />
-            <span className='sr-only'>Settings</span>
-          </Button>
-          <Button variant='outline' size='icon' className='h-9 w-9'>
-            <User className='h-4 w-4' />
-            <span className='sr-only'>Profile</span>
-          </Button>
           <Button onClick={() => setShowForm(!showForm)}>
             <Plus className='mr-2 h-4 w-4' />
             {showForm ? 'Cancel' : "Log Today's Health"}

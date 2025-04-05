@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       Your job is to give **concise** health tips, self-care advice, and encourage users to seek medical attention when needed.
       Be **warm, empathetic, and informative**, but avoid medical diagnoses or excessive details.
 
-      If the user asks about specific topics, suggest visiting the relevant pages:
+      If the user asks about specific topics, suggest visiting the relevant pages with relevant information of the topics:
       - **Skin Disease** → AI-Powered Diagnostics
       - **Mental Health** → Mental Health Support
       - **Emergency Help** → Emergency Assistance
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     for (const [keywords, link] of Object.entries(keywordLinks)) {
       const regex = new RegExp(`\\b(${keywords})\\b`, 'i');
       if (regex.test(message)) {
-        reply += `\n\n👉 **For more details, visit our [dedicated page](${link})**.`;
+        reply += `\n\nFor more details, visit our page👉 **[Click Here](${link})**.`;
         break;
       }
     }
