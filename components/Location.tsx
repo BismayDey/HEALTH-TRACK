@@ -13,7 +13,7 @@ const Location: React.FC = () => {
 
   return (
     <div>
-      <div className="w-full max-w-[900px] h-[300px] mb-[30px] rounded-xl overflow-hidden border border-gray-700 md:max-w-full">
+      <div className="w-full max-w-[900px] h-[300px] mb-[30px] rounded-xl overflow-hidden md:max-w-full">
         <iframe
           src={`https://www.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`}
           width="100%"
