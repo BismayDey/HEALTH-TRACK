@@ -1051,7 +1051,7 @@ export default function HealthcareLanding() {
               <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 md:grid-cols-2 lg:grid-cols-3">
                 {[
                   {
-                    name: "DR. Nancy Maguire",
+                    name: "Dr. Nancy Maguire",
                     specialty: "Family Medicine",
                     image: "/doc2.jpg",
                     education: "Johns Hopkins University",
