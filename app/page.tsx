@@ -868,24 +868,23 @@ export default function HealthcareLanding() {
                   </div>
                   <div className='p-8'>
                     <div className='uppercase tracking-wide text-sm text-[#0284c7] font-semibold'>
-                      AI-Powered Entertainment
+                      Entertainment Tailored to Your Mood
                     </div>
                     <h3 className='mt-1 text-xl font-semibold text-[#0f172a]'>
                       Smart Movie & Music Recommendations Based on Your Mood
                     </h3>
                     <p className='mt-2 text-[#64748b]'>
-                      Our AI-driven recommendation system suggests the best
-                      movies and songs tailored to your emotions. Whether you're
-                      happy, sad, or in need of motivation, our AI analyses your
-                      mood and curates the perfect entertainment experience for
-                      you.
+                      Get the best movie and music recommendations based on how
+                      you feel. Whether you're happy, sad, or need motivation,
+                      our system curates the perfect entertainment experience
+                      for you.
                     </p>
                     <div className='mt-4 flex flex-wrap gap-2'>
                       <Badge className='bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors'>
                         Mood-Based Recommendations
                       </Badge>
                       <Badge className='bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors'>
-                        AI-Powered Curation
+                        Curated Selections
                       </Badge>
                       <Badge className='bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors'>
                         Personalized Experience
@@ -895,7 +894,7 @@ export default function HealthcareLanding() {
                       <Link
                         href='/msrecom'
                         className='inline-block px-4 py-2 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-md transition-colors'>
-                        Get Your AI Recommendations
+                        Get Your Recommendations
                       </Link>
                     </div>
                   </div>
