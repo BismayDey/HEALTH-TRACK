@@ -900,7 +900,7 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='trestbps'>Resting BP (mmHg)</Label>
+                <Label htmlFor='trestbps'>Resting BLood Pressure (mmHg)</Label>
                 <Input
                   id='trestbps'
                   name='trestbps'
@@ -914,7 +914,7 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='chol'>Cholesterol (mg/dL)</Label>
+                <Label htmlFor='chol'>Serum Cholesterol (mg/dL)</Label>
                 <Input
                   id='chol'
                   name='chol'
@@ -928,7 +928,7 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='restecg'>Rest ECG (0-2)</Label>
+                <Label htmlFor='restecg'>Resting ECG (0-2)</Label>
                 <Input
                   id='restecg'
                   name='restecg'
@@ -942,7 +942,7 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='thalach'>Max Heart Rate</Label>
+                <Label htmlFor='thalach'>Max Heart Rate achieved</Label>
                 <Input
                   id='thalach'
                   name='thalach'
@@ -956,7 +956,9 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='exang'>Exercise Angina (0 = No, 1 = Yes)</Label>
+                <Label htmlFor='exang'>
+                  Exercise Induced Angina (0 = No, 1 = Yes)
+                </Label>
                 <Input
                   id='exang'
                   name='exang'
@@ -970,7 +972,9 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='oldpeak'>ST Depression</Label>
+                <Label htmlFor='oldpeak'>
+                  Oldpeak (ST Depression induced by exercise relative to rest)
+                </Label>
                 <Input
                   id='oldpeak'
                   name='oldpeak'
@@ -985,7 +989,9 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='slope'>Slope (0-2)</Label>
+                <Label htmlFor='slope'>
+                  Slope of the peak exercise ST segment (0-2)
+                </Label>
                 <Input
                   id='slope'
                   name='slope'
@@ -999,7 +1005,9 @@ function HeartRiskAnalysis() {
               </div>
 
               <div className='space-y-2'>
-                <Label htmlFor='ca'>CA Score (0-3)</Label>
+                <Label htmlFor='ca'>
+                  Number of major vessels (0-3) colored by flouroscopy
+                </Label>
                 <Input
                   id='ca'
                   name='ca'
