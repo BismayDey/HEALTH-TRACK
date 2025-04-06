@@ -1549,7 +1549,7 @@ export default function HealthcareLanding() {
           <div className="border-t border-[#e2e8f0] py-6">
             <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
               <p className="text-center text-sm text-[#64748b] md:text-left">
-                © {new Date().getFullYear()} MediCare. All rights reserved.
+                © {new Date().getFullYear()} HealthTrack. All rights reserved.
               </p>
               <div className="flex gap-4">
                 <Link
