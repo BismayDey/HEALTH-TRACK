@@ -46,11 +46,11 @@ export async function POST(req: Request) {
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${process.env.API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: 'google/gemma-3-12b-it:free',
+          model: 'google/gemma-3-1b-it:free',
           messages: [systemMessage, { role: 'user', content: message }],
           max_tokens: 100,
         }),
