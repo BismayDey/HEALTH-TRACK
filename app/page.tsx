@@ -1535,7 +1535,7 @@ export default function HealthcareLanding() {
                   href="#"
                   className="text-sm text-[#64748b] hover:text-[#0284c7] transition-colors"
                 >
-                  Terms of Service
+                  Terms of Services
                 </Link>
                 <Link
                   href="#"
