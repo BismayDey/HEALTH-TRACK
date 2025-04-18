@@ -161,7 +161,6 @@ export default function HealthcareLanding() {
 
                   {isOpen && (
                     <div className='absolute right-0 mt-2 w-56 rounded-lg bg-white shadow-lg border border-gray-200 overflow-hidden'>
-                      {/* User Info */}
                       <div className='px-4 py-2'>
                         <p className='text-sm font-medium'>
                           {user?.displayName || 'User'}
@@ -262,7 +261,7 @@ export default function HealthcareLanding() {
                   </div>
                   <div className='space-y-2'>
                     <h1 className='text-3xl font-bold tracking-tighter text-[#0f172a] sm:text-5xl xl:text-6xl/none'>
-                      Your Health Is Our{' '}
+                      Your Health Is Our
                       <span className='text-[#0284c7]'>Top Priority</span>
                     </h1>
                     <p className='max-w-[600px] text-[#64748b] md:text-xl'>
@@ -271,19 +270,12 @@ export default function HealthcareLanding() {
                     </p>
                   </div>
                   <div className='flex flex-col gap-2 min-[400px]:flex-row'>
-                    <Button
-                      size='lg'
-                      className='bg-[#0284c7] hover:bg-[#0369a1] text-white inline-flex items-center gap-2 shadow-sm font-bold'>
-                      Book an Appointment
+                    <Link
+                      href='/PresAI'
+                      className='bg-[#0284c7] hover:bg-[#0369a1] px-4 py-2 rounded-sm text-white inline-flex items-center gap-2 shadow-sm font-bold'>
+                      Analyze Your Prescription
                       <ChevronRight className='h-4 w-4' />
-                    </Button>
-                    <Button
-                      variant='outline'
-                      size='lg'
-                      className='border-[#0284c7] text-[#0284c7] group'>
-                      Learn More
-                      <ChevronRight className='ml-1 h-4 w-4 transition-transform group-hover:translate-x-1' />
-                    </Button>
+                    </Link>
                   </div>
                   <div className='flex flex-wrap items-center gap-4 text-sm mt-4'>
                     <div className='flex items-center gap-1 bg-white rounded-full px-3 py-1 shadow-sm'>
