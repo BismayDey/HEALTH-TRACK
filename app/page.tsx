@@ -878,6 +878,97 @@ export default function HealthcareLanding() {
                     </Link>
                   </div>
                 </Card>
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-28 h-28 rounded-full bg-[#34D399]/10 flex items-center justify-center mb-6 group-hover:bg-[#34D399]/20 transition-colors">
+                      <div className="w-24 h-24">
+                        <DotLottieReact
+                          src="https://lottie.host/6cef0fb7-84b7-4d02-861a-c00b3d631392/UNPjZm7wCt.lottie"
+                          loop
+                          autoplay
+                          style={{
+                            width: "120%",
+                            height: "120%",
+                            position: "relative",
+                            left: "-10%",
+                            top: "-10%",
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl text-[#1D4ED8] group-hover:text-[#34D399] transition-colors text-center">
+                      Liver Disease Prediction
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#64748b] text-center">
+                      Use AI to predict liver disease based on vital signs,
+                      lifestyle factors, and medical history. Get personalized
+                      insights on your liver health.
+                    </CardDescription>
+                  </CardContent>
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-6 mb-6">
+                      <div className="space-y-4">
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-base text-[#64748b]">
+                              Liver Enzyme Levels
+                            </span>
+                            <span className="text-base font-medium text-[#0f172a]">
+                              Elevated
+                            </span>
+                          </div>
+                          <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
+                            <div
+                              className="bg-[#34D399] h-2.5 rounded-full"
+                              style={{ width: "60%" }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-base text-[#64748b]">
+                              Fatty Liver Index
+                            </span>
+                            <span className="text-base font-medium text-[#0f172a]">
+                              Moderate
+                            </span>
+                          </div>
+                          <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
+                            <div
+                              className="bg-[#F59E0B] h-2.5 rounded-full"
+                              style={{ width: "75%" }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-base text-[#64748b]">
+                              Bilirubin Levels
+                            </span>
+                            <span className="text-base font-medium text-[#0f172a]">
+                              Normal
+                            </span>
+                          </div>
+                          <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
+                            <div
+                              className="bg-[#10B981] h-2.5 rounded-full"
+                              style={{ width: "90%" }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <Link
+                      href="/liver"
+                      className="w-full group border-2 border-[#34D399] text-[#34D399] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#2F9F74] hover:text-white transition text-lg"
+                    >
+                      Try Liver Disease Prediction
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
+                </Card>
               </div>
               <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden ">
                 <div className="md:flex ">
@@ -919,6 +1010,52 @@ export default function HealthcareLanding() {
                         className="inline-block px-4 py-2 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-md transition-colors"
                       >
                         Get Your Recommendations
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden">
+                <div className="md:flex">
+                  <div className="md:shrink-0 border-r-2 border-black bg-[#0284c7]/20">
+                    <DotLottieReact
+                      src="https://lottie.host/a7b61e3d-58cc-4987-ae3d-5c637f7b1b28/8sfq4jhlQn.lottie"
+                      loop
+                      autoplay
+                      className="h-48 w-full object-cover md:h-full md:w-48"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <div className="uppercase tracking-wide text-sm text-[#0284c7] font-semibold">
+                      Smart Prescription Analyzer
+                    </div>
+                    <h3 className="mt-1 text-xl font-semibold text-[#0f172a]">
+                      Decode and Understand Prescriptions with Ease
+                    </h3>
+                    <p className="mt-2 text-[#64748b]">
+                      Say goodbye to confusion over complex medical
+                      prescriptions. Our AI-powered analyzer helps you
+                      accurately interpret prescription details, including drug
+                      names, dosages, timings, and potential interactions.
+                      Designed to be patient-friendly and doctor-approved.
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
+                        OCR Enabled
+                      </Badge>
+                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
+                        Drug Interaction Checker
+                      </Badge>
+                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
+                        Patient-Friendly Reports
+                      </Badge>
+                    </div>
+                    <div className="mt-6">
+                      <Link
+                        href="/PresAI"
+                        className="inline-block px-4 py-2 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-md transition-colors"
+                      >
+                        Try Prescription Analyzer
                       </Link>
                     </div>
                   </div>
