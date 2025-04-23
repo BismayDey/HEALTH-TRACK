@@ -502,11 +502,14 @@ export default function ChatPage() {
     }
 
     try {
-      const res = await fetch("https://groq-chatbot-wsct.onrender.com/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ msg }),
-      });
+      const res = await fetch(
+        "http://groq-health-ai-production.up.railway.app/chat",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ msg }),
+        }
+      );
 
       const data = await res.json();
 
