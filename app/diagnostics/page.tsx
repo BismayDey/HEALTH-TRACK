@@ -600,7 +600,7 @@ function SkinAnalysis() {
 
     try {
       const response = await fetch(
-        'https://api-skin-disease-identifier.onrender.com/predict',
+        'http://apiskindiseaseidentifier-production.up.railway.app/predict',
         {
           method: 'POST',
           body: formData,
@@ -814,7 +814,7 @@ function HeartRiskAnalysis() {
 
       // Send to API
       const response = await fetch(
-        'https://api-for-diabetes-and-heart-disease.onrender.com/predict/heart_disease',
+        'https://apidiabetesheartd-production.up.railway.app/predict/heart_disease',
         {
           method: 'POST',
           headers: {
@@ -1148,7 +1148,7 @@ function DiabetesAnalysis() {
 
       // Send to API
       const response = await fetch(
-        'https://api-for-diabetes-and-heart-disease.onrender.com/predict/diabetes',
+        'https://apidiabetesheartd-production.up.railway.app/predict/diabetes',
         {
           method: 'POST',
           headers: {
