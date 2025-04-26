@@ -67,7 +67,6 @@ export default function ChatPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  // Check authentication status
   useEffect(() => {
     try {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
