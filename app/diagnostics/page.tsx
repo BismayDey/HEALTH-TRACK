@@ -582,7 +582,6 @@ function SkinAnalysis() {
     setProgress(0);
     setError(null);
 
-    // Simulate progress
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 95) {
@@ -599,13 +598,10 @@ function SkinAnalysis() {
     const startTime = Date.now();
 
     try {
-      const response = await fetch(
-        'http://apiskindiseaseidentifier-production.up.railway.app/predict',
-        {
-          method: 'POST',
-          body: formData,
-        },
-      );
+      const response = await fetch('/api/skin', {
+        method: 'POST',
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error('API request failed');
@@ -785,7 +781,6 @@ function HeartRiskAnalysis() {
     setIsAnalyzing(true);
     setProgress(0);
 
-    // Simulate progress
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 95) {
@@ -797,7 +792,6 @@ function HeartRiskAnalysis() {
     }, 100);
 
     try {
-      // Prepare data for API
       const apiData = {
         age: Number.parseInt(formData.age),
         gender: Number.parseInt(formData.gender),
@@ -812,17 +806,13 @@ function HeartRiskAnalysis() {
         ca: Number.parseInt(formData.ca),
       };
 
-      // Send to API
-      const response = await fetch(
-        'https://apidiabetesheartd-production.up.railway.app/predict/heart_disease',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(apiData),
+      const response = await fetch('/api/heart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(apiData),
+      });
 
       if (!response.ok) {
         throw new Error('API request failed');
@@ -1125,7 +1115,6 @@ function DiabetesAnalysis() {
     setIsAnalyzing(true);
     setProgress(0);
 
-    // Simulate progress
     const interval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 95) {
@@ -1137,7 +1126,6 @@ function DiabetesAnalysis() {
     }, 100);
 
     try {
-      // Prepare data for API
       const apiData = {
         glucose: Number.parseInt(formData.glucose),
         BP: Number.parseInt(formData.BP),
@@ -1146,17 +1134,13 @@ function DiabetesAnalysis() {
         age: Number.parseInt(formData.age),
       };
 
-      // Send to API
-      const response = await fetch(
-        'https://apidiabetesheartd-production.up.railway.app/predict/diabetes',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(apiData),
+      const response = await fetch('/api/diabetes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(apiData),
+      });
 
       if (!response.ok) {
         throw new Error('API request failed');
