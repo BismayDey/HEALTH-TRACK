@@ -791,8 +791,6 @@ export default function HealthPredictor() {
       },
     },
   };
-
-  // Add the hover button styles
   const hoverButtonStyles = `
   .hover-button {
     display: flex;
@@ -810,7 +808,7 @@ export default function HealthPredictor() {
     transition: all .8s;
     cursor: pointer;
     position: relative;
-    background: rgb(14, 165, 165);
+    background:  #0284C7; /* Fully visible color */
     overflow: hidden;
   }
 
