@@ -897,14 +897,14 @@ export default function HealthcareLanding() {
                       </div>
                     </div>
                     <CardTitle className="text-2xl text-[#1D4ED8] group-hover:text-[#34D399] transition-colors text-center">
-                      Liver Disease Prediction
+                      Liver & Kidney Disease Prediction
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="px-8 pb-8">
                     <CardDescription className="text-lg text-[#64748b] text-center">
-                      Use AI to predict liver disease based on vital signs,
-                      lifestyle factors, and medical history. Get personalized
-                      insights on your liver health.
+                      Predict liver and kidney health risks using AI. Analyse
+                      enzyme levels, creatinine, blood urea, and lifestyle
+                      factors to get detailed health insights.
                     </CardDescription>
                   </CardContent>
                   <div className="px-8 pb-8">
@@ -916,36 +916,20 @@ export default function HealthcareLanding() {
                               Liver Enzyme Levels
                             </span>
                             <span className="text-base font-medium text-[#0f172a]">
-                              Elevated
-                            </span>
-                          </div>
-                          <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
-                            <div
-                              className="bg-[#34D399] h-2.5 rounded-full"
-                              style={{ width: "60%" }}
-                            ></div>
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          <div className="flex justify-between items-center">
-                            <span className="text-base text-[#64748b]">
-                              Fatty Liver Index
-                            </span>
-                            <span className="text-base font-medium text-[#0f172a]">
-                              Moderate
+                              Slightly Elevated
                             </span>
                           </div>
                           <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
                             <div
                               className="bg-[#F59E0B] h-2.5 rounded-full"
-                              style={{ width: "75%" }}
+                              style={{ width: "70%" }}
                             ></div>
                           </div>
                         </div>
                         <div className="space-y-3">
                           <div className="flex justify-between items-center">
                             <span className="text-base text-[#64748b]">
-                              Bilirubin Levels
+                              Creatinine Levels
                             </span>
                             <span className="text-base font-medium text-[#0f172a]">
                               Normal
@@ -954,7 +938,23 @@ export default function HealthcareLanding() {
                           <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
                             <div
                               className="bg-[#10B981] h-2.5 rounded-full"
-                              style={{ width: "90%" }}
+                              style={{ width: "85%" }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-base text-[#64748b]">
+                              Blood Urea Nitrogen
+                            </span>
+                            <span className="text-base font-medium text-[#0f172a]">
+                              Moderate Risk
+                            </span>
+                          </div>
+                          <div className="w-full bg-[#e2e8f0] rounded-full h-2.5">
+                            <div
+                              className="bg-[#F97316] h-2.5 rounded-full"
+                              style={{ width: "65%" }}
                             ></div>
                           </div>
                         </div>
@@ -964,7 +964,7 @@ export default function HealthcareLanding() {
                       href="/liver"
                       className="w-full group border-2 border-[#34D399] text-[#34D399] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#2F9F74] hover:text-white transition text-lg"
                     >
-                      Try Liver Disease Prediction
+                      Try Liver & Kidney Prediction
                       <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                     </Link>
                   </div>
