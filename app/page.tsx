@@ -1018,7 +1018,7 @@ export default function HealthcareLanding() {
                 <div className="md:flex">
                   <div className="md:shrink-0 border-r-2 border-black bg-[#0284c7]/20">
                     <DotLottieReact
-                      src="https://lottie.host/4a740c65-f272-406c-b9e5-e6593501ba13/GhufdB2S8q.lottie"
+                      src="https://lottie.host/a7b61e3d-58cc-4987-ae3d-5c637f7b1b28/8sfq4jhlQn.lottie"
                       loop
                       autoplay
                       className="h-48 w-full object-cover md:h-full md:w-48"
