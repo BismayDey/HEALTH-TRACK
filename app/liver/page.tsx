@@ -50,7 +50,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// Define types for form data and prediction result
 type LiverFormData = {
   age: string;
   gender: string;
@@ -78,7 +77,6 @@ type PredictionResult = {
   confidence: string;
 };
 
-// Tooltip component
 const Tooltip = ({
   text,
   children,
@@ -112,7 +110,6 @@ const Tooltip = ({
   );
 };
 
-// Pulse animation component
 const PulseCircle = () => {
   return (
     <div className="relative">
@@ -122,7 +119,6 @@ const PulseCircle = () => {
   );
 };
 
-// Health score gauge component
 const HealthGauge = ({ score }: { score: number }) => {
   const circumference = 2 * Math.PI * 40;
   const strokeDashoffset = circumference - (score / 100) * circumference;
@@ -165,7 +161,6 @@ const HealthGauge = ({ score }: { score: number }) => {
   );
 };
 
-// Animated number counter
 const AnimatedCounter = ({
   value,
   duration = 1,
@@ -200,7 +195,6 @@ const AnimatedCounter = ({
   return <span>{count}</span>;
 };
 
-// Animated progress bar
 const ProgressBar = ({
   value,
   color = "teal",
@@ -230,7 +224,6 @@ const ProgressBar = ({
   );
 };
 
-// Animated checkmark
 const AnimatedCheckmark = () => {
   const pathVariants = {
     hidden: { pathLength: 0, opacity: 0 },
@@ -269,12 +262,10 @@ const AnimatedCheckmark = () => {
 };
 
 export default function HealthPredictor() {
-  // State for active disease predictor
   const [activePredictor, setActivePredictor] = useState<"liver" | "kidney">(
     "liver"
   );
 
-  // State for liver form data
   const [liverFormData, setLiverFormData] = useState<LiverFormData>({
     age: "",
     gender: "0",
@@ -285,7 +276,6 @@ export default function HealthPredictor() {
     sgot: "",
   });
 
-  // State for kidney form data
   const [kidneyFormData, setKidneyFormData] = useState<KidneyFormData>({
     SerumCreatinine: "",
     GFR: "",
@@ -298,7 +288,6 @@ export default function HealthPredictor() {
     HemoglobinLevels: "",
   });
 
-  // State for prediction result, loading state, and error
   const [liverResult, setLiverResult] = useState<PredictionResult | null>(null);
   const [kidneyResult, setKidneyResult] = useState<PredictionResult | null>(
     null
@@ -312,10 +301,8 @@ export default function HealthPredictor() {
   const [showNotification, setShowNotification] = useState(false);
   const [showShareOptions, setShowShareOptions] = useState(false);
 
-  // Animation controls
   const controls = useAnimation();
 
-  // Update progress bar based on filled fields
   useEffect(() => {
     if (activePredictor === "liver") {
       const filledFields = Object.values(liverFormData).filter(
@@ -332,7 +319,6 @@ export default function HealthPredictor() {
     }
   }, [liverFormData, kidneyFormData, activePredictor]);
 
-  // Show notification on mount
   useEffect(() => {
     setTimeout(() => {
       setShowNotification(true);
@@ -340,7 +326,6 @@ export default function HealthPredictor() {
     }, 2000);
   }, []);
 
-  // Handle liver form input changes
   const handleLiverChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -348,27 +333,23 @@ export default function HealthPredictor() {
     setLiverFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  // Handle kidney form input changes
   const handleKidneyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setKidneyFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  // Handle liver form submission
   const handleLiverSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     setLiverResult(null);
 
-    // Validate form data
     if (!validateLiverForm()) {
       setIsLoading(false);
       setError("Please fill in all fields with valid values.");
       return;
     }
 
-    // Prepare data for API
     const data = {
       age: Number.parseInt(liverFormData.age),
       gender: Number.parseInt(liverFormData.gender),
@@ -380,10 +361,8 @@ export default function HealthPredictor() {
     };
 
     try {
-      // Simulate API call with a delay
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
-      // Mock response
       const resultData = {
         prediction:
           Math.random() > 0.5
@@ -406,21 +385,18 @@ export default function HealthPredictor() {
     }
   };
 
-  // Handle kidney form submission
   const handleKidneySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
     setKidneyResult(null);
 
-    // Validate form data
     if (!validateKidneyForm()) {
       setIsLoading(false);
       setError("Please fill in all fields with valid values.");
       return;
     }
 
-    // Prepare data for API
     const data = {
       SerumCreatinine: Number.parseFloat(kidneyFormData.SerumCreatinine),
       GFR: Number.parseInt(kidneyFormData.GFR),
@@ -436,10 +412,8 @@ export default function HealthPredictor() {
     };
 
     try {
-      // Simulate API call with a delay
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
-      // Mock response
       const resultData = {
         prediction:
           Math.random() > 0.5
@@ -462,7 +436,6 @@ export default function HealthPredictor() {
     }
   };
 
-  // Validate liver form data
   const validateLiverForm = () => {
     return (
       liverFormData.age !== "" &&
@@ -474,7 +447,6 @@ export default function HealthPredictor() {
     );
   };
 
-  // Validate kidney form data
   const validateKidneyForm = () => {
     return (
       kidneyFormData.SerumCreatinine !== "" &&
@@ -489,7 +461,6 @@ export default function HealthPredictor() {
     );
   };
 
-  // Reset liver form
   const resetLiverForm = () => {
     setLiverFormData({
       age: "",
@@ -505,7 +476,6 @@ export default function HealthPredictor() {
     setActiveSection(0);
   };
 
-  // Reset kidney form
   const resetKidneyForm = () => {
     setKidneyFormData({
       SerumCreatinine: "",
@@ -523,7 +493,6 @@ export default function HealthPredictor() {
     setActiveSection(0);
   };
 
-  // Liver form sections
   const liverSections = [
     {
       title: "Personal Information",
@@ -542,7 +511,6 @@ export default function HealthPredictor() {
     },
   ];
 
-  // Kidney form sections
   const kidneySections = [
     {
       title: "Creatinine & Filtration",
@@ -561,7 +529,6 @@ export default function HealthPredictor() {
     },
   ];
 
-  // Field labels and units for liver
   const liverFieldInfo: Record<
     string,
     {
@@ -621,7 +588,6 @@ export default function HealthPredictor() {
     },
   };
 
-  // Field labels and units for kidney
   const kidneyFieldInfo: Record<
     string,
     {
@@ -740,7 +706,6 @@ export default function HealthPredictor() {
     },
   };
 
-  // Animation variants
   const cardVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -858,15 +823,12 @@ export default function HealthPredictor() {
   }
 `;
 
-  // Add the hover button styles to the component
   useEffect(() => {
-    // Add the styles to the document
     const styleElement = document.createElement("style");
     styleElement.innerHTML = hoverButtonStyles;
     document.head.appendChild(styleElement);
 
     return () => {
-      // Clean up the styles when the component unmounts
       document.head.removeChild(styleElement);
     };
   }, []);
