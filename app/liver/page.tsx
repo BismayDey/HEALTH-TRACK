@@ -935,7 +935,7 @@ export default function HealthPredictor() {
               </div>
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                  BlackScanner
+                  Liver and Kidney Disease predictor
                 </h1>
                 <p className="text-sm text-gray-600">
                   Advanced health assessment & prediction system

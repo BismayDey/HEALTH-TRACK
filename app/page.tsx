@@ -776,6 +776,80 @@ export default function HealthcareLanding() {
                     </Link>
                   </div>
                 </Card>
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-28 h-28 rounded-full bg-[#6b1e9b]/10 flex items-center justify-center mb-6 group-hover:bg-[#6b1e9b]/20 transition-colors">
+                      <div className="w-24 h-24">
+                        <DotLottieReact
+                          src="https://lottie.host/ce53b9e0-ef45-4364-bddd-5ae2ccd20d63/2oP8xUEhNa.lottie"
+                          loop
+                          autoplay
+                          style={{
+                            width: "130%",
+                            height: "130%",
+                            position: "relative",
+                            left: "-15%",
+                            top: "-15%",
+                            transform: "scale(1.1)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl text-[#5a1a72] group-hover:text-[#6b1e9b] transition-colors text-center">
+                      Real-Time Talking Bot Dashboard
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#4b1963] text-center">
+                      View all bot activity and settings. Monitor bot
+                      performance, user interactions, and configure bot
+                      responses in real-time.
+                    </CardDescription>
+                  </CardContent>
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-6 mb-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-base font-medium text-[#0f172a]">
+                          Bot Features
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+                          <span className="text-base text-[#64748b]">
+                            Real-time voice processing
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+                          <span className="text-base text-[#64748b]">
+                            AI-driven responses
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+                          <span className="text-base text-[#64748b]">
+                            Multi-language support
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <CheckCircle className="h-5 w-5 text-[#22c55e]" />
+                          <span className="text-base text-[#64748b]">
+                            Contextual understanding
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Link
+                      href="/TALKING"
+                      className="w-full group border-2 border-[#6b1e9b] text-[#6b1e9b] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#6b1e9b] hover:text-white transition text-lg"
+                    >
+                      Talk With Bot
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
+                </Card>
 
                 {/* Health Dashboard */}
                 <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
@@ -968,6 +1042,59 @@ export default function HealthcareLanding() {
                     </Link>
                   </div>
                 </Card>
+                <Card className="group overflow-hidden transition-all hover:shadow-lg border-none bg-white w-full max-w-lg mx-auto scale-100 hover:scale-[1.02] duration-300">
+                  <CardHeader className="p-8 flex flex-col items-center">
+                    <div className="w-24 h-24 rounded-full bg-[#10b981]/10 flex items-center justify-center mb-6 group-hover:bg-[#10b981]/20 transition-colors">
+                      <div className="w-20 h-20">
+                        <DotLottieReact
+                          src="https://lottie.host/f26e91c4-f120-420b-848b-34a426ec53a5/KSRMPjKW3m.lottie" // Use a relevant animation for prescription or health-related analysis
+                          loop
+                          autoplay
+                          style={{ width: "100%", height: "100%" }}
+                        />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl text-[#0f172a] group-hover:text-[#10b981] transition-colors text-center">
+                      Prescription Analyzer
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="px-8 pb-8">
+                    <CardDescription className="text-lg text-[#64748b] text-center">
+                      Upload your prescription and get detailed analysis,
+                      medication interactions, side effects, and personalized
+                      recommendations.
+                    </CardDescription>
+                  </CardContent>
+                  <div className="px-8 pb-8">
+                    <div className="bg-[#f8fafc] rounded-lg p-5 mb-6">
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className="w-8 h-8 rounded-full bg-[#10b981] flex items-center justify-center shrink-0 text-white text-xs">
+                          AI
+                        </div>
+                        <div className="bg-[#e0fdf4] rounded-lg p-2 text-sm text-[#0f172a]">
+                          Please upload your prescription and I’ll analyze it
+                          for any potential issues.
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-3 justify-end">
+                        <div className="bg-[#f1f5f9] rounded-lg p-2 text-sm text-[#0f172a]">
+                          I’m on multiple medications for hypertension. Can you
+                          check for possible interactions?
+                        </div>
+                        <div className="w-8 h-8 rounded-full bg-[black] flex items-center justify-center shrink-0 text-[white] text-xs">
+                          You
+                        </div>
+                      </div>
+                    </div>
+                    <Link
+                      href="/PresAI"
+                      className="w-full group border-2 border-[#10b981] text-[#10b981] px-6 py-3 rounded-lg flex items-center justify-center hover:bg-[#10b981] hover:text-white transition text-lg"
+                    >
+                      Start Prescription Analysis
+                      <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
+                </Card>
               </div>
               <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden ">
                 <div className="md:flex ">
@@ -1009,52 +1136,6 @@ export default function HealthcareLanding() {
                         className="inline-block px-4 py-2 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-md transition-colors"
                       >
                         Get Your Recommendations
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-16 bg-white rounded-xl shadow-md overflow-hidden">
-                <div className="md:flex">
-                  <div className="md:shrink-0 border-r-2 border-black bg-[#0284c7]/20">
-                    <DotLottieReact
-                      src="https://lottie.host/a7b61e3d-58cc-4987-ae3d-5c637f7b1b28/8sfq4jhlQn.lottie"
-                      loop
-                      autoplay
-                      className="h-48 w-full object-cover md:h-full md:w-48"
-                    />
-                  </div>
-                  <div className="p-8">
-                    <div className="uppercase tracking-wide text-sm text-[#0284c7] font-semibold">
-                      Smart Prescription Analyzer
-                    </div>
-                    <h3 className="mt-1 text-xl font-semibold text-[#0f172a]">
-                      Decode and Understand Prescriptions with Ease
-                    </h3>
-                    <p className="mt-2 text-[#64748b]">
-                      Say goodbye to confusion over complex medical
-                      prescriptions. Our AI-powered analyzer helps you
-                      accurately interpret prescription details, including drug
-                      names, dosages, timings, and potential interactions.
-                      Designed to be patient-friendly and doctor-approved.
-                    </p>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
-                        OCR Enabled
-                      </Badge>
-                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
-                        Drug Interaction Checker
-                      </Badge>
-                      <Badge className="bg-[#0284c7]/10 text-[#0284c7] hover:bg-[#0284c7]/20 transition-colors">
-                        Patient-Friendly Reports
-                      </Badge>
-                    </div>
-                    <div className="mt-6">
-                      <Link
-                        href="/PresAI"
-                        className="inline-block px-4 py-2 bg-[#0284c7] hover:bg-[#0369a1] text-white rounded-md transition-colors"
-                      >
-                        Try Prescription Analyzer
                       </Link>
                     </div>
                   </div>
