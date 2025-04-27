@@ -931,7 +931,7 @@ export default function HealthPredictor() {
               </div>
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
-                  HealthScan Pro
+                  BlackScanner
                 </h1>
                 <p className="text-sm text-gray-600">
                   Advanced health assessment & prediction system
@@ -947,7 +947,7 @@ export default function HealthPredictor() {
                   className="flex items-center text-sm font-medium text-gray-600 hover:text-teal-600 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-all"
                 >
                   <ArrowLeft className="w-4 h-4 mr-1" />
-                  Dashboard
+                  Home Page
                 </motion.button>
               </Link>
 
