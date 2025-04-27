@@ -1,61 +1,35 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { X } from "lucide-react";
-import { useCallback } from "react";
 
-// Define TypeScript types
-type AudioVisualizerProps = {
-  isVisible: boolean;
-};
-
-type ResponseContainerProps = {
-  text: string;
-  onClose: () => void;
-  isTyping: boolean;
-};
-
-type NotificationProps = {
-  message: string;
-  isVisible: boolean;
-};
-
-type ButtonState =
-  | "ready"
-  | "recording"
-  | "sending"
-  | "listening"
-  | "auto-recording";
-
-export default function Home() {
-  // State management
-  const [buttonState, setButtonState] = useState<ButtonState>("ready");
-  const [status, setStatus] = useState("Ready");
-  const [responseText, setResponseText] = useState("");
-  const [isResponseVisible, setIsResponseVisible] = useState(false);
-  const [isTyping, setIsTyping] = useState(false);
-  const [notification, setNotification] = useState({
-    message: "",
-    isVisible: false,
-  });
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [isAutoRecording, setIsAutoRecording] = useState(false);
-  const [hasSpokenOnce, setHasSpokenOnce] = useState(false);
-  const [autoRecordingEnabled, setAutoRecordingEnabled] = useState(false);
-  const [isAudioVisualizerVisible, setIsAudioVisualizerVisible] =
-    useState(false);
-
-  // Refs
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const socketRef = useRef<WebSocket | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const particlesRef = useRef<HTMLDivElement>(null);
+export default function DrGroq() {
+  const recordBtnRef = useRef<HTMLButtonElement>(null);
+  const statusTextRef = useRef<HTMLParagraphElement>(null);
   const rippleRef = useRef<HTMLDivElement>(null);
+  const particlesRef = useRef<HTMLDivElement>(null);
   const btnWaveRef = useRef<HTMLDivElement>(null);
+  const audioVisualizerRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
 
-  // Create particles
-  const createParticles = useCallback(() => {
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null
+  );
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [responseContainer, setResponseContainer] =
+    useState<HTMLDivElement | null>(null);
+  const [responseTextElement, setResponseTextElement] =
+    useState<HTMLDivElement | null>(null);
+  const [currentTextResponse, setCurrentTextResponse] = useState("");
+  const [textStreamBuffer, setTextStreamBuffer] = useState("");
+  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [recordingState, setRecordingState] = useState<
+    "ready" | "recording" | "sending" | "listening"
+  >("ready");
+
+  // Create floating particles with different colors
+  function createParticles() {
     if (!particlesRef.current) return;
 
     const count = Math.floor(window.innerWidth / 15);
@@ -63,6 +37,7 @@ export default function Home() {
 
     for (let i = 0; i < count; i++) {
       const particle = document.createElement("div");
+      particle.classList.add("particle");
 
       // Randomize particle properties
       const size = Math.random() * 6 + 1;
@@ -70,257 +45,396 @@ export default function Home() {
       const duration = Math.random() * 40 + 20;
       const delay = Math.random() * 15;
 
-      // Randomize colors
-      const colors = ["#9932CC", "#FF00FF", "#00FFFF"];
+      // Randomize colors between primary, accent and accent-secondary
+      const colors = ["bg-violet-500", "bg-fuchsia-500", "bg-cyan-400"];
       const color = colors[Math.floor(Math.random() * colors.length)];
 
-      // Apply styles
-      particle.className = "absolute rounded-full opacity-30";
+      particle.classList.add(color);
       particle.style.width = `${size}px`;
       particle.style.height = `${size}px`;
       particle.style.left = `${posX}px`;
       particle.style.bottom = `-10px`;
-      particle.style.background = color;
-      particle.style.boxShadow = `0 0 ${size * 2}px ${color}`;
-      particle.style.animation = `float ${duration}s linear infinite`;
+      particle.style.animationDuration = `${duration}s`;
       particle.style.animationDelay = `${delay}s`;
+      particle.style.boxShadow = `0 0 ${size * 2}px ${
+        color === "bg-violet-500"
+          ? "#8b5cf6"
+          : color === "bg-fuchsia-500"
+          ? "#d946ef"
+          : "#22d3ee"
+      }`;
 
       particlesRef.current.appendChild(particle);
     }
-  }, []);
+  }
 
   // Show notification
-  const showNotification = useCallback((message: string, duration = 3000) => {
-    setNotification({ message, isVisible: true });
+  function showNotification(message: string, duration = 3000) {
+    if (!notificationRef.current) return;
+
+    notificationRef.current.textContent = message;
+    notificationRef.current.classList.add("opacity-100", "translate-y-0");
 
     setTimeout(() => {
-      setNotification((prev) => ({ ...prev, isVisible: false }));
+      if (notificationRef.current) {
+        notificationRef.current.classList.remove(
+          "opacity-100",
+          "translate-y-0"
+        );
+      }
     }, duration);
-  }, []);
+  }
 
-  // Trigger button wave animation
-  const triggerButtonWave = useCallback(() => {
+  // Button wave animation
+  function triggerButtonWave() {
     if (!btnWaveRef.current) return;
 
     btnWaveRef.current.classList.remove("animate-btn-wave");
     void btnWaveRef.current.offsetWidth; // Force reflow
     btnWaveRef.current.classList.add("animate-btn-wave");
-  }, []);
+  }
 
-  // Connect WebSocket
-  const connectWebSocket = useCallback(() => {
-    // In a real app, you would use environment variables for the WebSocket URL
-    // For demo purposes, we'll simulate the connection
-    const simulateWebSocket = () => {
-      const mockSocket = {
-        send: (data: any) => {
-          console.log("Sending data:", data);
+  // Initialize WebSocket connection
+  function connectWebSocket() {
+    const ws = new WebSocket(
+      "wss://embarrassing-viviana-yugamax-b8b4e309.koyeb.app/groqspeaks"
+    );
 
-          // Simulate response after a delay
-          setTimeout(() => {
-            setIsTyping(true);
-            setIsResponseVisible(true);
-
-            // Simulate streaming text
-            const response =
-              "I'm Dr. Groq, your AI medical assistant. I notice you're interested in discussing your health. While I can provide general information, remember that I'm not a replacement for professional medical advice. How can I assist you today?";
-            let currentIndex = 0;
-
-            const textInterval = setInterval(() => {
-              if (currentIndex < response.length) {
-                setResponseText(response.substring(0, currentIndex + 1));
-                currentIndex++;
-              } else {
-                clearInterval(textInterval);
-                setIsTyping(false);
-
-                // Simulate AI speaking
-                setAISpeakingState();
-
-                // Create audio element
-                const audio = new Audio("/placeholder-audio.mp3");
-                audioRef.current = audio;
-
-                // Simulate audio playing and ending
-                setTimeout(() => {
-                  audioFinished();
-                }, 3000);
-              }
-            }, 30);
-          }, 1500);
-        },
-        close: () => console.log("WebSocket closed"),
-      };
-
-      return mockSocket as unknown as WebSocket;
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+      if (statusTextRef.current) {
+        statusTextRef.current.textContent = "Ready";
+      }
     };
 
-    // In a real app, you would use a real WebSocket connection
-    // socketRef.current = new WebSocket('ws://127.0.0.1:8000/groqspeaks');
-    socketRef.current = simulateWebSocket();
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+      if (statusTextRef.current) {
+        statusTextRef.current.textContent = "Reconnecting...";
+      }
+      setTimeout(connectWebSocket, 1000);
+    };
 
-    setStatus("Ready");
-  }, []);
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+      if (statusTextRef.current) {
+        statusTextRef.current.textContent = "Connection error";
+      }
+    };
 
-  // Set AI speaking state
-  const setAISpeakingState = useCallback(() => {
-    setButtonState("listening");
+    ws.onmessage = async (event) => {
+      if (event.data instanceof Blob) {
+        // Handle audio response
+        const audioBlob = new Blob([event.data], { type: "audio/wav" });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audioElement = new Audio(audioUrl);
+        setAudio(audioElement);
+
+        // AI Speaking state
+        setAISpeakingState();
+
+        // Play audio
+        await audioElement.play();
+
+        // When audio finishes
+        audioElement.onended = () => {
+          audioFinished();
+        };
+      } else {
+        // Handle text response
+        try {
+          const data = JSON.parse(event.data);
+
+          if (data.type === "text_stream") {
+            // Streaming text response
+            handleStreamingText(data);
+          } else if (data.type === "audio_processing") {
+            // Status update
+            if (statusTextRef.current) {
+              statusTextRef.current.innerHTML = `<span class="thinking">${data.message}</span>`;
+            }
+          } else if (data.type === "full_text") {
+            // Complete text response
+            showTextResponse(data.text);
+          }
+        } catch (e) {
+          // Fallback for plain text messages
+          showTextResponse(event.data);
+        }
+      }
+    };
+
+    setSocket(ws);
+  }
+
+  function setAISpeakingState() {
+    setRecordingState("listening");
     setIsSpeaking(true);
-    setStatus("Groq AI Speaking");
-    setIsAudioVisualizerVisible(true);
+
+    if (statusTextRef.current) {
+      statusTextRef.current.innerHTML =
+        '<span class="groq">Groq AI Speaking</span>';
+    }
+
+    if (audioVisualizerRef.current) {
+      audioVisualizerRef.current.style.display = "flex";
+    }
 
     // Ripple effect
     if (rippleRef.current) {
       rippleRef.current.innerHTML = "";
       for (let i = 0; i < 3; i++) {
         const rippleElement = document.createElement("span");
-        rippleElement.className =
-          "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-full border-2 border-purple-400 opacity-0";
-        rippleElement.style.animation = `ripple 2s infinite ease-out ${
-          i * 0.5
-        }s`;
+        rippleElement.style.animationDelay = `${i * 0.5}s`;
         rippleRef.current.appendChild(rippleElement);
       }
     }
-  }, []);
+  }
 
-  // Audio finished playing
-  const audioFinished = useCallback(() => {
+  // Remove auto-recording functionality by modifying the audioFinished function
+  function audioFinished() {
     setIsSpeaking(false);
-    setIsAudioVisualizerVisible(false);
 
-    // If this is the first time AI has spoken, enable auto-recording
-    if (!hasSpokenOnce) {
-      setHasSpokenOnce(true);
-      setAutoRecordingEnabled(true);
-      startAutoRecording();
-    } else if (autoRecordingEnabled) {
-      startAutoRecording();
-    } else {
-      resetUI();
+    if (audioVisualizerRef.current) {
+      audioVisualizerRef.current.style.display = "none";
     }
-  }, [hasSpokenOnce, autoRecordingEnabled]);
 
-  // Start auto recording
-  const startAutoRecording = useCallback(() => {
-    setIsAutoRecording(true);
-    setButtonState("auto-recording");
-    setStatus("Auto Recording");
-    showNotification("Auto-recording activated. Click Stop to disable.");
+    // Remove auto-recording logic and just reset the UI
+    resetUI();
+  }
 
-    // Start recording after a short delay
-    setTimeout(() => {
-      if (isAutoRecording) {
-        startRecording();
+  // Remove the startAutoRecording function entirely and replace it with this empty function
+  // to avoid any references to it causing errors
+  function startAutoRecording() {
+    // Auto-recording disabled as requested
+    resetUI();
+  }
+
+  function handleStreamingText(data: { text: string }) {
+    if (!responseContainer) {
+      createResponseContainer();
+    }
+
+    if (data.text === "[DONE]") {
+      // Streaming complete
+      const typingIndicator = document.querySelector(".typing-indicator");
+      if (typingIndicator) {
+        typingIndicator.remove();
       }
-    }, 1000);
-  }, [isAutoRecording, showNotification]);
 
-  // Reset UI
-  const resetUI = useCallback(() => {
-    setButtonState("ready");
+      // AI Speaking state
+      setAISpeakingState();
+
+      return;
+    }
+
+    // Append text to buffer
+    const newBuffer = textStreamBuffer + data.text;
+    setTextStreamBuffer(newBuffer);
+
+    // Update display with smooth typing effect
+    if (!responseTextElement) return;
+
+    setCurrentTextResponse(newBuffer);
+
+    if (responseContainer) {
+      responseContainer.scrollTop = responseContainer.scrollHeight;
+    }
+  }
+
+  function createResponseContainer() {
+    if (responseContainer) {
+      responseContainer.remove();
+    }
+
+    const container = document.createElement("div");
+    container.className =
+      "fixed bottom-[100px] left-1/2 -translate-x-1/2 bg-[rgba(18,18,18,0.85)] border border-violet-500 rounded-2xl p-6 max-w-[85%] w-[550px] shadow-[0_10px_40px_rgba(138,43,226,0.4)] z-[100] backdrop-blur-[15px] animate-fade-in max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-track-custom";
+
+    const header = document.createElement("div");
+    header.className =
+      "flex justify-between items-center mb-4 border-b border-violet-500 pb-4 relative";
+
+    const title = document.createElement("div");
+    title.className =
+      "font-orbitron text-violet-500 text-xl shadow-[0_0_10px_rgba(138,43,226,0.3)] relative pl-6";
+    title.textContent = "Dr. Groq Response";
+
+    // Add the dot before the title
+    const dot = document.createElement("div");
+    dot.className =
+      "absolute left-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-violet-500 rounded-full shadow-[0_0_10px_var(--primary-light)] animate-pulse";
+    title.prepend(dot);
+
+    header.appendChild(title);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className =
+      "bg-transparent border-none text-white text-2xl cursor-pointer opacity-70 transition-all duration-200 w-8 h-8 flex items-center justify-center rounded-full hover:opacity-100 hover:scale-110 hover:bg-white/10";
+    closeBtn.innerHTML = "&times;";
+    closeBtn.onclick = () => {
+      document.body.removeChild(container);
+      resetUI();
+      setResponseContainer(null);
+      setResponseTextElement(null);
+      setCurrentTextResponse("");
+      setTextStreamBuffer("");
+    };
+    header.appendChild(closeBtn);
+
+    container.appendChild(header);
+
+    // Add typing indicator
+    const typingIndicator = document.createElement("div");
+    typingIndicator.className =
+      "typing-indicator flex items-center gap-1 mb-4 p-2.5 bg-violet-500/10 rounded-[10px] w-fit";
+    typingIndicator.innerHTML = `
+      <div class="typing-dot w-2 h-2 bg-violet-500 rounded-full opacity-40 animate-typing-animation"></div>
+      <div class="typing-dot w-2 h-2 bg-violet-500 rounded-full opacity-40 animate-typing-animation delay-200"></div>
+      <div class="typing-dot w-2 h-2 bg-violet-500 rounded-full opacity-40 animate-typing-animation delay-400"></div>
+      <span class="ml-2.5 text-violet-500">Dr. Groq is typing...</span>
+    `;
+    container.appendChild(typingIndicator);
+
+    const textElement = document.createElement("div");
+    textElement.className =
+      "text-white text-lg leading-relaxed mb-4 whitespace-pre-wrap relative py-1.5";
+    container.appendChild(textElement);
+
+    document.body.appendChild(container);
+
+    setResponseContainer(container);
+    setResponseTextElement(textElement);
+  }
+
+  function showTextResponse(text: string) {
+    createResponseContainer();
+    setCurrentTextResponse(text);
+
+    if (responseTextElement) {
+      responseTextElement.textContent = text;
+    }
+
+    // AI Speaking state
+    setAISpeakingState();
+  }
+
+  function resetUI() {
+    setRecordingState("ready");
     setIsSpeaking(false);
-    setIsAutoRecording(false);
-    setStatus("Ready");
-    setIsAudioVisualizerVisible(false);
-  }, []);
+
+    if (statusTextRef.current) {
+      statusTextRef.current.textContent = "Ready";
+    }
+
+    if (rippleRef.current) {
+      rippleRef.current.innerHTML = "";
+    }
+
+    if (audioVisualizerRef.current) {
+      audioVisualizerRef.current.style.display = "none";
+    }
+  }
 
   // Start recording
-  const startRecording = useCallback(async () => {
+  async function startRecording() {
     try {
       // Clear any previous response
-      setResponseText("");
+      setTextStreamBuffer("");
+      setCurrentTextResponse("");
 
-      audioChunksRef.current = [];
+      setAudioChunks([]);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
+      const recorder = new MediaRecorder(stream);
+      setMediaRecorder(recorder);
 
-      mediaRecorder.ondataavailable = (event) => {
+      recorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
+          setAudioChunks((chunks) => [...chunks, event.data]);
         }
       };
 
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/m4a",
-        });
+      recorder.onstop = async () => {
+        const chunks = audioChunks;
+        const audioBlob = new Blob(chunks, { type: "audio/m4a" });
 
         // Sending state
-        setButtonState("sending");
-        setStatus("Processing");
+        setRecordingState("sending");
+
+        if (statusTextRef.current) {
+          statusTextRef.current.innerHTML =
+            '<span class="thinking">Processing</span>';
+        }
 
         // Send audio
         const arrayBuffer = await audioBlob.arrayBuffer();
-        if (socketRef.current) {
-          socketRef.current.send(arrayBuffer);
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          socket.send(arrayBuffer);
+        } else {
+          // Simulate response for demo purposes
+          setTimeout(() => {
+            showTextResponse(
+              "I'm sorry, but I couldn't connect to the server. Please check your connection and try again."
+            );
+          }, 1500);
         }
       };
 
-      mediaRecorder.start(100);
+      recorder.start(100);
 
-      if (isAutoRecording) {
-        setButtonState("auto-recording");
-      } else {
-        setButtonState("recording");
+      setRecordingState("recording");
+
+      if (statusTextRef.current) {
+        statusTextRef.current.textContent = "Listening";
       }
 
-      setStatus(isAutoRecording ? "Auto Recording" : "Listening");
-      setIsAudioVisualizerVisible(true);
+      if (audioVisualizerRef.current) {
+        audioVisualizerRef.current.style.display = "flex";
+      }
     } catch (error) {
       console.error("Error starting recording:", error);
-      setStatus(
-        `Error: ${error instanceof Error ? error.message : "Unknown error"}`
-      );
-      setButtonState("ready");
-      setIsAutoRecording(false);
-      setIsAudioVisualizerVisible(false);
+
+      if (statusTextRef.current) {
+        statusTextRef.current.textContent = `Error: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`;
+      }
+
+      setRecordingState("ready");
+
+      if (audioVisualizerRef.current) {
+        audioVisualizerRef.current.style.display = "none";
+      }
     }
-  }, [isAutoRecording]);
+  }
 
   // Stop recording
-  const stopRecording = useCallback(() => {
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== "inactive"
-    ) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.stream
-        .getTracks()
-        .forEach((track) => track.stop());
+  function stopRecording() {
+    if (mediaRecorder && mediaRecorder.state !== "inactive") {
+      mediaRecorder.stop();
+      mediaRecorder.stream.getTracks().forEach((track) => track.stop());
     }
-  }, []);
+  }
 
   // Stop auto recording mode
-  const stopAutoRecording = useCallback(() => {
-    setAutoRecordingEnabled(false);
-    setIsAutoRecording(false);
-    showNotification("Auto-recording disabled");
-
-    if (
-      mediaRecorderRef.current &&
-      mediaRecorderRef.current.state !== "inactive"
-    ) {
-      stopRecording();
-    }
-
+  function stopAutoRecording() {
+    // Auto-recording disabled as requested
     resetUI();
-  }, [resetUI, showNotification, stopRecording]);
+  }
 
   // Stop AI from speaking
-  const stopSpeaking = useCallback(() => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+  function stopSpeaking() {
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
     }
 
     setIsSpeaking(false);
     resetUI();
-  }, [resetUI]);
+  }
 
-  // Handle button click
-  const handleButtonClick = useCallback(() => {
+  // Modify the handleButtonClick function to simplify the flow
+  function handleButtonClick() {
     triggerButtonWave();
 
     if (isSpeaking) {
@@ -329,35 +443,13 @@ export default function Home() {
       return;
     }
 
-    if (isAutoRecording) {
-      // Stop auto recording mode
-      stopAutoRecording();
-      return;
-    }
-
-    if (buttonState === "recording") {
+    if (recordingState === "recording") {
       stopRecording();
     } else {
       startRecording();
     }
-  }, [
-    buttonState,
-    isAutoRecording,
-    isSpeaking,
-    startRecording,
-    stopAutoRecording,
-    stopRecording,
-    stopSpeaking,
-    triggerButtonWave,
-  ]);
+  }
 
-  // Close response
-  const handleCloseResponse = useCallback(() => {
-    setIsResponseVisible(false);
-    resetUI();
-  }, [resetUI]);
-
-  // Initialize
   useEffect(() => {
     createParticles();
     connectWebSocket();
@@ -375,7 +467,7 @@ export default function Home() {
       const mouseY = e.clientY;
 
       // Move some particles slightly towards mouse
-      const particleElements = document.querySelectorAll("[data-particle]");
+      const particleElements = document.querySelectorAll(".particle");
       particleElements.forEach((particle, index) => {
         if (index % 5 === 0) {
           // Only affect some particles
@@ -385,192 +477,137 @@ export default function Home() {
 
           const deltaX = (mouseX - particleX) * 0.01;
           const deltaY = (mouseY - particleY) * 0.01;
-          (
-            particle as HTMLElement
-          ).style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+
+          particle.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
         }
       });
     };
 
     document.addEventListener("mousemove", handleMouseMove);
 
-    // Cleanup
     return () => {
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("mousemove", handleMouseMove);
 
-      if (socketRef.current) {
-        socketRef.current.close();
+      if (socket) {
+        socket.close();
       }
     };
-  }, [connectWebSocket, createParticles]);
+  }, []);
+
+  // Update responseTextElement content when currentTextResponse changes
+  useEffect(() => {
+    if (responseTextElement) {
+      responseTextElement.textContent = currentTextResponse;
+    }
+  }, [currentTextResponse, responseTextElement]);
+
+  // Update button text based on recording state
+  const getButtonText = () => {
+    switch (recordingState) {
+      case "recording":
+        return "Send";
+      case "sending":
+        return "Sending";
+      case "listening":
+        return "Stop";
+      default:
+        return "Speak";
+    }
+  };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-900 text-white relative overflow-hidden">
-      {/* Background elements */}
-      <div className="fixed top-0 left-0 w-full h-full bg-gray-900 z-0 opacity-20 bg-[radial-gradient(circle_at_center,_#8A2BE2,_transparent_70%)] animate-pulse-bg"></div>
-
-      {/* Hexagon background */}
-      <div className="fixed top-0 left-0 w-full h-full z-[-1] opacity-10 bg-hexagon-pattern"></div>
-
-      {/* Particles */}
+    <div className="flex justify-center items-center min-h-screen bg-[#121212] text-white overflow-hidden relative p-5">
+      <div className="fixed top-0 left-0 w-full h-full z-0 opacity-20 bg-[radial-gradient(circle_at_center,#8A2BE2,transparent_70%)] animate-pulse-bg"></div>
+      <div className="fixed top-0 left-0 w-full h-full z-0 opacity-10 bg-hexagon"></div>
       <div
         ref={particlesRef}
-        className="fixed top-0 left-0 w-full h-full z-0 overflow-hidden"
+        className="particles fixed top-0 left-0 w-full h-full z-0 overflow-hidden"
       ></div>
 
-      {/* Glow effects */}
-      <div className="fixed top-[20%] left-[20%] w-[200px] h-[200px] rounded-full bg-[radial-gradient(circle,_#8A2BE2_0%,_transparent_70%)] opacity-30 blur-xl animate-move-around z-[-1]"></div>
-      <div className="fixed top-[60%] left-[70%] w-[200px] h-[200px] rounded-full bg-[radial-gradient(circle,_#8A2BE2_0%,_transparent_70%)] opacity-30 blur-xl animate-move-around-alt z-[-1]"></div>
+      <div
+        className="glow-effect absolute w-[200px] h-[200px] rounded-full bg-[radial-gradient(circle,#8A2BE2_0%,transparent_70%)] opacity-30 blur-xl animate-move-around-1 z-[-1]"
+        style={{ top: "20%", left: "20%" }}
+      ></div>
+      <div
+        className="glow-effect absolute w-[200px] h-[200px] rounded-full bg-[radial-gradient(circle,#8A2BE2_0%,transparent_70%)] opacity-30 blur-xl animate-move-around-2 z-[-1]"
+        style={{ top: "60%", left: "70%" }}
+      ></div>
 
-      {/* Notification */}
-      <Notification
-        message={notification.message}
-        isVisible={notification.isVisible}
-      />
+      <div
+        ref={notificationRef}
+        className="notification fixed top-5 left-1/2 -translate-x-1/2 bg-[rgba(18,18,18,0.9)] border border-violet-500 rounded-lg py-3 px-5 text-white text-sm shadow-lg z-[1000] opacity-0 transition-all duration-300 pointer-events-none"
+      >
+        Auto-recording mode activated
+      </div>
 
-      {/* Main container */}
-      <div className="text-center max-w-[500px] w-full relative z-10 backdrop-blur-md p-5 rounded-3xl shadow-lg bg-gray-900/40 border border-purple-600/20 animate-fade-in">
-        <h1 className="font-['Orbitron',_sans-serif] text-5xl mb-2 bg-gradient-to-r from-purple-600 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent shadow-text animate-gradient-shift">
+      <div className="text-center max-w-[500px] w-full relative z-10 backdrop-blur-md p-5 rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.3)] bg-[rgba(18,18,18,0.4)] border border-[rgba(138,43,226,0.2)] animate-fade-in">
+        <h1 className="font-orbitron text-5xl mb-2 bg-gradient-to-r from-violet-600 via-fuchsia-500 to-cyan-400 bg-clip-text text-transparent shadow-[0_0_15px_rgba(138,43,226,0.4)] animate-gradient-shift">
           Dr. Groq
         </h1>
-        <p className="text-lg mb-8 opacity-80 shadow-text">
+        <p className="text-lg mb-8 opacity-80 shadow-[0_0_10px_rgba(255,255,255,0.3)]">
           Your Talking AI medical assistant
         </p>
 
-        {/* Button container */}
         <div className="relative my-10 flex justify-center">
           <button
+            ref={recordBtnRef}
             onClick={handleButtonClick}
-            className={`w-40 h-40 rounded-full border-none text-white font-['Orbitron',_sans-serif] text-xl font-bold cursor-pointer shadow-lg outline-none relative z-10 uppercase tracking-wider overflow-hidden transition-all duration-300 ease-out transform hover:scale-105 ${
-              buttonState === "ready"
-                ? "bg-gradient-to-br from-indigo-900 to-purple-600 shadow-[0_8px_16px_rgba(0,0,0,0.3),0_0_0_2px_rgba(138,43,226,0.3),inset_0_0_20px_rgba(138,43,226,0.2)]"
-                : buttonState === "recording"
-                ? "bg-gradient-to-br from-[#6A1B9A] to-[#9C27B0] shadow-[0_8px_16px_rgba(0,0,0,0.3),0_0_0_4px_rgba(255,0,0,0.3),inset_0_0_30px_rgba(255,0,0,0.2)] animate-pulse"
-                : buttonState === "sending"
-                ? "bg-gradient-to-br from-[#FF6D00] to-[#FFAB00] shadow-[0_8px_16px_rgba(0,0,0,0.3),0_0_0_4px_rgba(255,171,0,0.3),inset_0_0_30px_rgba(255,171,0,0.2)]"
-                : buttonState === "listening"
-                ? "bg-gradient-to-br from-[#0D47A1] to-[#1976D2] shadow-[0_8px_16px_rgba(0,0,0,0.3),0_0_0_4px_rgba(25,118,210,0.3),inset_0_0_30px_rgba(25,118,210,0.2)]"
-                : "bg-gradient-to-br from-[#2E7D32] to-[#43A047] shadow-[0_8px_16px_rgba(0,0,0,0.3),0_0_0_4px_rgba(51,255,153,0.3),inset_0_0_30px_rgba(51,255,153,0.2)] animate-pulse"
-            }`}
+            className={`w-40 h-40 rounded-full border-none text-white font-orbitron text-xl font-bold cursor-pointer shadow-[0_8px_16px_rgba(0,0,0,0.3),0_0_0_2px_rgba(138,43,226,0.3),inset_0_0_20px_rgba(138,43,226,0.2)] transition-all duration-300 outline-none relative z-[1] uppercase tracking-wider overflow-hidden
+              ${
+                recordingState === "ready"
+                  ? "bg-gradient-to-br from-indigo-900 to-violet-600"
+                  : ""
+              }
+              ${
+                recordingState === "recording"
+                  ? "bg-gradient-to-br from-purple-900 to-purple-600 animate-pulse"
+                  : ""
+              }
+              ${
+                recordingState === "sending"
+                  ? "bg-gradient-to-br from-amber-900 to-amber-600"
+                  : ""
+              }
+              ${
+                recordingState === "listening"
+                  ? "bg-gradient-to-br from-blue-900 to-blue-600"
+                  : ""
+              }
+              hover:scale-105 hover:shadow-[0_12px_24px_rgba(0,0,0,0.4),0_0_0_4px_rgba(138,43,226,0.4),inset_0_0_30px_rgba(138,43,226,0.3)]
+            `}
           >
-            <span className="relative z-20">
-              {buttonState === "ready"
-                ? "Speak"
-                : buttonState === "recording"
-                ? "Send"
-                : buttonState === "sending"
-                ? "Sending"
-                : "Stop"}
-            </span>
+            <span className="relative z-[2]">{getButtonText()}</span>
             <div
               ref={btnWaveRef}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-full bg-white/10 opacity-0"
+              className="btn-wave absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-full bg-white/10 opacity-0"
             ></div>
           </button>
           <div
             ref={rippleRef}
-            className="absolute top-0 left-0 right-0 bottom-0 rounded-full pointer-events-none z-0 opacity-70"
+            className="ripple absolute top-0 left-0 right-0 bottom-0 rounded-full pointer-events-none z-0 opacity-70"
           ></div>
         </div>
 
-        {/* Status text */}
         <p
-          className={`mt-8 text-xl font-semibold text-white h-6 font-['Orbitron',_sans-serif] tracking-wider uppercase shadow-text relative ${
-            status === "Processing" ? "thinking" : ""
-          }`}
+          ref={statusTextRef}
+          className="status mt-8 text-xl font-semibold text-white h-6 font-orbitron tracking-wider uppercase shadow-[0_0_10px_rgba(255,255,255,0.3)] relative after:content-[''] after:absolute after:bottom-[-10px] after:left-1/2 after:-translate-x-1/2 after:w-[50px] after:h-[2px] after:bg-gradient-to-r after:from-transparent after:via-violet-500 after:to-transparent"
         >
-          {status}
+          Ready
         </p>
 
-        {/* Audio visualizer */}
-        <AudioVisualizer isVisible={isAudioVisualizerVisible} />
-      </div>
-
-      {/* Response container */}
-      {isResponseVisible && (
-        <ResponseContainer
-          text={responseText}
-          onClose={handleCloseResponse}
-          isTyping={isTyping}
-        />
-      )}
-    </div>
-  );
-}
-
-// Audio Visualizer Component
-function AudioVisualizer({ isVisible }: AudioVisualizerProps) {
-  if (!isVisible) return null;
-
-  return (
-    <div className="flex items-center justify-center gap-1 h-5 mt-3">
-      {[...Array(5)].map((_, i) => (
         <div
-          key={i}
-          className="w-[3px] h-full bg-purple-400 rounded-sm animate-audio-visualize"
-          style={{ animationDelay: `${i * 0.1}s` }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// Response Container Component
-function ResponseContainer({
-  text,
-  onClose,
-  isTyping,
-}: ResponseContainerProps) {
-  return (
-    <div className="fixed bottom-[100px] left-1/2 -translate-x-1/2 bg-gray-900/85 border border-purple-600 rounded-2xl p-6 max-w-[85%] w-[550px] shadow-[0_10px_40px_rgba(138,43,226,0.4)] z-[100] backdrop-blur-md animate-fade-in max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-purple-400 scrollbar-track-gray-800/50">
-      <div className="flex justify-between items-center mb-4 border-b border-purple-400 pb-4 relative">
-        <h3 className="font-['Orbitron',_sans-serif] text-purple-400 text-xl shadow-text relative pl-6">
-          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-purple-400 rounded-full shadow-[0_0_10px_#9932CC] animate-pulse"></span>
-          Dr. Groq Response
-        </h3>
-        <button
-          onClick={onClose}
-          className="bg-transparent border-none text-white text-2xl cursor-pointer opacity-70 transition-all duration-200 hover:opacity-100 hover:scale-110 hover:bg-white/10 w-8 h-8 flex items-center justify-center rounded-full"
+          ref={audioVisualizerRef}
+          className="audio-visualizer flex items-center justify-center gap-[3px] h-5 mt-2.5"
+          style={{ display: "none" }}
         >
-          <X size={18} />
-        </button>
-      </div>
-
-      {isTyping && (
-        <div className="flex items-center gap-1 mb-4 p-3 bg-purple-600/10 rounded-lg w-fit">
-          <div
-            className="w-2 h-2 bg-purple-400 rounded-full opacity-40 animate-typing-dot"
-            style={{ animationDelay: "0s" }}
-          ></div>
-          <div
-            className="w-2 h-2 bg-purple-400 rounded-full opacity-40 animate-typing-dot"
-            style={{ animationDelay: "0.2s" }}
-          ></div>
-          <div
-            className="w-2 h-2 bg-purple-400 rounded-full opacity-40 animate-typing-dot"
-            style={{ animationDelay: "0.4s" }}
-          ></div>
-          <span className="ml-3 text-purple-400">Dr. Groq is typing...</span>
+          <div className="audio-bar w-[3px] h-full bg-violet-500 rounded-[3px] animate-audio-visualize-1"></div>
+          <div className="audio-bar w-[3px] h-full bg-violet-500 rounded-[3px] animate-audio-visualize-2"></div>
+          <div className="audio-bar w-[3px] h-full bg-violet-500 rounded-[3px] animate-audio-visualize-3"></div>
+          <div className="audio-bar w-[3px] h-full bg-violet-500 rounded-[3px] animate-audio-visualize-4"></div>
+          <div className="audio-bar w-[3px] h-full bg-violet-500 rounded-[3px] animate-audio-visualize-5"></div>
         </div>
-      )}
-
-      <div className="text-white text-lg leading-relaxed mb-4 whitespace-pre-wrap relative p-1">
-        {text}
       </div>
-    </div>
-  );
-}
-
-// Notification Component
-function Notification({ message, isVisible }: NotificationProps) {
-  return (
-    <div
-      className={`fixed top-5 left-1/2 -translate-x-1/2 bg-gray-900/90 border border-purple-600 rounded-lg py-3 px-5 text-white text-sm shadow-[0_5px_15px_rgba(0,0,0,0.3)] z-[1000] transition-all duration-300 pointer-events-none ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-      }`}
-    >
-      {message}
     </div>
   );
 }
