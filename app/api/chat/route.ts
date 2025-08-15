@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     console.log('Calling external API with message:', body.msg);
 
     const externalResponse = await fetch(
-      'https://groq-health-ai-production.up.railway.app/chat',
+      'https://groq-chatbot-wsct.onrender.com/chat',
       {
         method: 'POST',
         headers: {
