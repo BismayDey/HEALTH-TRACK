@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const response = await fetch(
-      'https://apidiabetesheartd-production.up.railway.app/predict/heart_disease',
+      'https://api-for-diabetes-and-heart-disease.onrender.com/predict/heart_disease',
       {
         method: 'POST',
         headers: {
