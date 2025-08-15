@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const response = await fetch(
-      'https://apiskindiseaseidentifier-production.up.railway.app/predict',
+      'https://api-skin-disease-identifier.onrender.com/predict',
       {
         method: 'POST',
         body: formData,
