@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     const url =
-      'http://apisongmovierec-production.up.railway.app/recommendations';
+      'https://song-movie-rec.onrender.com/recommendations';
 
     try {
       const externalRes = await fetchWithRetry(url, {
